@@ -1,0 +1,65 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35827.183
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nvidia_FE_lighting", "nvidia_FE_lighting\nvidia_FE_lighting.csproj", "{EC117498-9EB1-403B-8C56-6F63E35F8BD9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{125CCD9D-21FB-40AF-A97B-B3196E60F28B} = {125CCD9D-21FB-40AF-A97B-B3196E60F28B}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NvApiWrapper", "NvApiWrapper\NvApiWrapper.vcxproj", "{125CCD9D-21FB-40AF-A97B-B3196E60F28B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NvApiWrapperTest", "NvApiWrapperTest\NvApiWrapperTest.csproj", "{05C17FF0-B9E3-465A-8710-FB937DF618D1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EC117498-9EB1-403B-8C56-6F63E35F8BD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC117498-9EB1-403B-8C56-6F63E35F8BD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC117498-9EB1-403B-8C56-6F63E35F8BD9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EC117498-9EB1-403B-8C56-6F63E35F8BD9}.Debug|x64.Build.0 = Debug|Any CPU
+		{EC117498-9EB1-403B-8C56-6F63E35F8BD9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EC117498-9EB1-403B-8C56-6F63E35F8BD9}.Debug|x86.Build.0 = Debug|Any CPU
+		{EC117498-9EB1-403B-8C56-6F63E35F8BD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC117498-9EB1-403B-8C56-6F63E35F8BD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC117498-9EB1-403B-8C56-6F63E35F8BD9}.Release|x64.ActiveCfg = Release|Any CPU
+		{EC117498-9EB1-403B-8C56-6F63E35F8BD9}.Release|x64.Build.0 = Release|Any CPU
+		{EC117498-9EB1-403B-8C56-6F63E35F8BD9}.Release|x86.ActiveCfg = Release|Any CPU
+		{EC117498-9EB1-403B-8C56-6F63E35F8BD9}.Release|x86.Build.0 = Release|Any CPU
+		{125CCD9D-21FB-40AF-A97B-B3196E60F28B}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{125CCD9D-21FB-40AF-A97B-B3196E60F28B}.Debug|Any CPU.Build.0 = Debug|x64
+		{125CCD9D-21FB-40AF-A97B-B3196E60F28B}.Debug|x64.ActiveCfg = Debug|x64
+		{125CCD9D-21FB-40AF-A97B-B3196E60F28B}.Debug|x64.Build.0 = Debug|x64
+		{125CCD9D-21FB-40AF-A97B-B3196E60F28B}.Debug|x86.ActiveCfg = Debug|Win32
+		{125CCD9D-21FB-40AF-A97B-B3196E60F28B}.Debug|x86.Build.0 = Debug|Win32
+		{125CCD9D-21FB-40AF-A97B-B3196E60F28B}.Release|Any CPU.ActiveCfg = Release|x64
+		{125CCD9D-21FB-40AF-A97B-B3196E60F28B}.Release|Any CPU.Build.0 = Release|x64
+		{125CCD9D-21FB-40AF-A97B-B3196E60F28B}.Release|x64.ActiveCfg = Release|x64
+		{125CCD9D-21FB-40AF-A97B-B3196E60F28B}.Release|x64.Build.0 = Release|x64
+		{125CCD9D-21FB-40AF-A97B-B3196E60F28B}.Release|x86.ActiveCfg = Release|Win32
+		{125CCD9D-21FB-40AF-A97B-B3196E60F28B}.Release|x86.Build.0 = Release|Win32
+		{05C17FF0-B9E3-465A-8710-FB937DF618D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05C17FF0-B9E3-465A-8710-FB937DF618D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05C17FF0-B9E3-465A-8710-FB937DF618D1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{05C17FF0-B9E3-465A-8710-FB937DF618D1}.Debug|x64.Build.0 = Debug|Any CPU
+		{05C17FF0-B9E3-465A-8710-FB937DF618D1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{05C17FF0-B9E3-465A-8710-FB937DF618D1}.Debug|x86.Build.0 = Debug|Any CPU
+		{05C17FF0-B9E3-465A-8710-FB937DF618D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05C17FF0-B9E3-465A-8710-FB937DF618D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05C17FF0-B9E3-465A-8710-FB937DF618D1}.Release|x64.ActiveCfg = Release|Any CPU
+		{05C17FF0-B9E3-465A-8710-FB937DF618D1}.Release|x64.Build.0 = Release|Any CPU
+		{05C17FF0-B9E3-465A-8710-FB937DF618D1}.Release|x86.ActiveCfg = Release|Any CPU
+		{05C17FF0-B9E3-465A-8710-FB937DF618D1}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

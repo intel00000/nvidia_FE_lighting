@@ -1,0 +1,31 @@
+﻿<Window x:Class="nvidia_FE_lighting.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:nvidia_FE_lighting"
+        mc:Ignorable="d"
+        Title="nvidia_FE_lighting" Height="432" Width="796">
+
+    <Grid Margin="10">
+        <StackPanel Orientation="Vertical" Height="266" VerticalAlignment="Top">
+
+            <!-- GPU Selection -->
+            <StackPanel x:Name="gpuSelectPanel" Orientation="Horizontal" Margin="0,0,0,10">
+                <Label x:Name="gpuSelectLabel" Content="Select GPU:" VerticalAlignment="Center"/>
+                <ComboBox x:Name="gpuSelectComboBox" Margin="10,0,0,0" IsReadOnly="True"/>
+                <Button x:Name="gpuSelectDetect" Content="Detect Zones" Margin="10,0,0,0"/>
+            </StackPanel>
+
+            <!-- Zones Panel -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Height="200">
+                <ItemsControl x:Name="gpuIlluminationZones">
+                    <!-- Items will be added dynamically -->
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- Apply All -->
+            <Button Content="Apply All" HorizontalAlignment="Right" Margin="0,10,0,0"/>
+        </StackPanel>
+    </Grid>
+</Window>

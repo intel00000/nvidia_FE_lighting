@@ -1,6 +1,9 @@
 #pragma once
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sstream>
 #include <windows.h>
 #include "nvapi.h"
 
@@ -16,4 +19,4 @@ NVAPI_DLL bool InitializeNvApi();
 NVAPI_DLL bool DeinitializeNvApi();
 
 
-NVAPI_DLL int GetNumberOfGPUs();
+NVAPI_DLL unsigned int GetNumberOfGPUs();

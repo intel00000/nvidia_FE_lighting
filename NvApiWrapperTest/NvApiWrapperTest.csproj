@@ -50,11 +50,5 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NvApiWrapper\NvApiWrapper.vcxproj">
-      <Project>{125ccd9d-21fb-40af-a97b-b3196e60f28b}</Project>
-      <Name>NvApiWrapper</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

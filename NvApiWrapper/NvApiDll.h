@@ -13,10 +13,71 @@
 #define NVAPI_DLL extern "C" __declspec(dllimport)
 #endif
 
-// Function declarations:
+// struct declarations
+// custom return struct for Illumination Zones Info Data, contain char arrays for type and location
+struct CustomIlluminationZonesInfoData
+{
+	char zoneType[16]; // type of illumination zone
+	char zoneLocation[16]; // location of illumination zone
+};
+// custom return struct for Illumination Zones Info
+struct CustomIlluminationZonesInfo
+{
+	unsigned int numIllumZones; // number of illumination zones
+	CustomIlluminationZonesInfoData zones[NV_GPU_CLIENT_ILLUM_ZONE_NUM_ZONES_MAX]; // array of illumination zones
+};
+// Struct to hold RGB values
+struct CustomRGB { uint8_t r, g, b, brightness; };
+// Struct to hold RGBW values
+struct CustomRGBW { uint8_t r, g, b, w, brightness; };
+// Struct to hold single color brightness
+struct CustomSingleColor { uint8_t brightness; };
+// Struct for piecewise linear animation data
+struct CustomPiecewiseLinear {
+	char cycleType[16];
+	uint16_t riseTimeMs, fallTimeMs;
+	uint16_t aTimeMs, bTimeMs;
+	uint16_t idleTimeMs, phaseOffsetMs;
+	uint8_t grpCount;
+};
+// Struct to represent a single illumination zone's control info
+struct CustomIlluminationZoneControl {
+	char zoneType[16];
+	char controlMode[24];
+	union {
+		CustomRGB rgb;
+		CustomRGBW rgbw;
+		CustomSingleColor singleColor;
+	} manualColorData;
+
+	union {
+		CustomRGB rgb;
+		CustomRGBW rgbw;
+		CustomSingleColor singleColor;
+	} piecewiseColorData[NV_GPU_CLIENT_ILLUM_CTRL_MODE_PIECEWISE_LINEAR_COLOR_ENDPOINTS];
+	bool isPiecewise;
+	CustomPiecewiseLinear piecewiseData;
+
+};
+// Struct to represent all zones
+struct CustomIlluminationZoneControls {
+	unsigned int numZones;
+	CustomIlluminationZoneControl zones[NV_GPU_CLIENT_ILLUM_ZONE_NUM_ZONES_MAX];
+};
+
+// Function declarations
 NVAPI_DLL const char* GetNvApiErrorMessage(NvAPI_Status status);
 NVAPI_DLL bool InitializeNvApi();
 NVAPI_DLL bool DeinitializeNvApi();
-
-
+NVAPI_DLL const char* GetInterfaceVersionString();
+NVAPI_DLL unsigned long GetDriverVersion();
 NVAPI_DLL unsigned int GetNumberOfGPUs();
+NVAPI_DLL NvPhysicalGpuHandle GetGPUHandle(unsigned int index);
+NVAPI_DLL const char* GetGPUName(unsigned int index);
+NVAPI_DLL const char* GetGPUInfo(unsigned int index);
+NVAPI_DLL const char* GetSystemType(unsigned int index);
+NVAPI_DLL const char* GetIlluminationZonesInfo(unsigned int index, CustomIlluminationZonesInfo* pCustomIlluminationZonesInfo);
+NVAPI_DLL const char* GetIlluminationZonesControl(unsigned int index, bool Default, CustomIlluminationZoneControls* pCustomIlluminationZoneControls);
+NVAPI_DLL bool SetIlluminationZoneManualRGBW(unsigned int gpuIndex, unsigned int zoneIndex, uint8_t red, uint8_t green, uint8_t blue, uint8_t white, uint8_t brightness, bool Default);
+NVAPI_DLL bool SetIlluminationZoneManualSingleColor(unsigned int gpuIndex, unsigned int zoneIndex, uint8_t brightness, bool Default);
+NVAPI_DLL void Testing();

@@ -17,6 +17,15 @@
                 <Button x:Name="gpuSelectDetect" Content="Detect Zones" Margin="10,0,0,0"/>
             </StackPanel>
 
+            <!-- GPU Info -->
+            <StackPanel x:Name="gpuInfoPanel" Orientation="Vertical" Margin="0,0,0,10">
+                <TextBlock x:Name="gpuNameText" FontWeight="Bold"/>
+                <TextBlock x:Name="gpuInfoText"/>
+                <TextBlock x:Name="gpuSystemTypeText"/>
+                <TextBlock x:Name="gpuDriverVersionText"/>
+                <TextBlock x:Name="gpuInterfaceVersionText"/>
+            </StackPanel>
+
             <!-- Zones Panel -->
             <ScrollViewer VerticalScrollBarVisibility="Auto" Height="200">
                 <ItemsControl x:Name="gpuIlluminationZones">

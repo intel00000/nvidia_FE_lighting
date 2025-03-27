@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace nvidia_FE_lighting
 {
@@ -64,7 +63,7 @@ namespace nvidia_FE_lighting
 
             public ManualColorData manualColorData;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
             public PiecewiseColorData[] piecewiseColorData;
 
             public bool isPiecewise;
@@ -77,7 +76,7 @@ namespace nvidia_FE_lighting
         {
             public uint numZones;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
             public CustomIlluminationZoneControl[] zones;
         }
 
@@ -96,7 +95,7 @@ namespace nvidia_FE_lighting
         {
             public uint numIllumZones;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
             public CustomIlluminationZonesInfoData[] zones;
         }
 

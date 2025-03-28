@@ -3,6 +3,7 @@
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
 		xmlns:local="clr-namespace:nvidia_FE_lighting"
 		mc:Ignorable="d"
 		Title="nvidia_FE_lighting" SizeToContent="WidthAndHeight">
@@ -14,7 +15,7 @@
 			<Border x:Name="gpuSelectPanelBorder" BorderBrush="Gray" BorderThickness="1" CornerRadius="10,10,10,10" Padding="10" Margin="10,10,10,10">
 				<StackPanel x:Name="gpuSelectPanel" Orientation="Horizontal" Margin="10,10,10,10">
 					<Label x:Name="gpuSelectLabel" Content="Select GPU:" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="10,10,10,10" FontWeight="Bold"/>
-					<ComboBox x:Name="gpuSelectComboBox" Margin="10,10,10,10" IsReadOnly="True" MinWidth="200" SelectionChanged="gpuSelectComboBox_SelectionChanged"/>
+					<ComboBox x:Name="gpuSelectComboBox" Margin="10,10,10,10" IsReadOnly="True" MinWidth="200" SelectionChanged="gpuSelectComboBox_SelectionChanged" VerticalContentAlignment="Center"/>
 					<Button x:Name="gpuSelectDetectIllumZones" Content="Detect Zones" Margin="10,10,10,10" MinWidth="100" Click="gpuSelectDetectIllumZones_Click"/>
 				</StackPanel>
 			</Border>
@@ -32,19 +33,16 @@
 			</Border>
 
 			<!-- Zones Panel -->
-			<Border x:Name="gpuIllumZonesBorder" BorderBrush="Gray" BorderThickness="1" CornerRadius="10,10,10,10" Padding="10" Margin="10,10,10,10">
-				<StackPanel x:Name="gpuIllumZonesPanel" Orientation="Vertical" Margin="10,10,10,10">
-					<TextBlock x:Name="gpuIlluminationZonesHeader" FontWeight="Bold" Text="Illumination Zones: " Margin="0,0,0,5"/>
-					<ScrollViewer VerticalScrollBarVisibility="Auto" Margin="35,0,0,5">
-						<ItemsControl x:Name="gpuIlluminationZones">
-							<!-- Illumination zones will be populated here -->
-						</ItemsControl>
-					</ScrollViewer>
-				</StackPanel>
-			</Border>
-
-			<!-- Illumination Apply Button -->
-			<Button x:Name="IlluminationSettingApply" Content="Apply All" HorizontalAlignment="Right" Margin="10,10,10,10" MinWidth="75"/>
-		</StackPanel>
+            <Border x:Name="gpuIllumZonesBorder" BorderBrush="Gray" BorderThickness="1" CornerRadius="10,10,10,10" Padding="10" Margin="10,10,10,10">
+                <StackPanel x:Name="gpuIllumZonesPanel" Orientation="Vertical" Margin="10,10,10,10">
+                    <TextBlock x:Name="gpuIlluminationZonesHeader" FontWeight="Bold" Text="Illumination Zones: " Margin="0,0,0,5"/>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="35,0,0,5">
+                        <ItemsControl x:Name="gpuIlluminationZones">
+                            <!-- Illumination zones will be populated here -->
+                        </ItemsControl>
+                    </ScrollViewer>
+                </StackPanel>
+            </Border>
+        </StackPanel>
 	</Grid>
 </Window>

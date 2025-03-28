@@ -1,5 +1,4 @@
 #pragma once
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,24 +39,20 @@ struct CustomPiecewiseLinear {
 	uint16_t idleTimeMs, phaseOffsetMs;
 	uint8_t grpCount;
 };
+// Struct to hold color data
+struct ColorData {
+	CustomRGB rgb;
+	CustomRGBW rgbw;
+	CustomSingleColor singleColor;
+};
 // Struct to represent a single illumination zone's control info
 struct CustomIlluminationZoneControl {
 	char zoneType[16];
 	char controlMode[24];
-	union {
-		CustomRGB rgb;
-		CustomRGBW rgbw;
-		CustomSingleColor singleColor;
-	} manualColorData;
-
-	union {
-		CustomRGB rgb;
-		CustomRGBW rgbw;
-		CustomSingleColor singleColor;
-	} piecewiseColorData[NV_GPU_CLIENT_ILLUM_CTRL_MODE_PIECEWISE_LINEAR_COLOR_ENDPOINTS];
-	bool isPiecewise;
+	ColorData manualColorData;
+	ColorData piecewiseColorData[NV_GPU_CLIENT_ILLUM_CTRL_MODE_PIECEWISE_LINEAR_COLOR_ENDPOINTS];
 	CustomPiecewiseLinear piecewiseData;
-
+	bool isPiecewise;
 };
 // Struct to represent all zones
 struct CustomIlluminationZoneControls {

@@ -34,6 +34,7 @@ namespace nvidia_FE_lighting
 			public ushort aTimeMs, bTimeMs;
 			public ushort idleTimeMs, phaseOffsetMs;
 			public byte grpCount;
+			public byte padding;
 		}
 
 		[StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -60,6 +61,8 @@ namespace nvidia_FE_lighting
 
             [MarshalAs(UnmanagedType.U1)]
             public bool isPiecewise;
+
+            public byte padding;
         }
 		[StructLayout(LayoutKind.Sequential, Pack = 4)]
 		public struct CustomIlluminationZoneControls

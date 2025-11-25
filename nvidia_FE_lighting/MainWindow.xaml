@@ -48,8 +48,7 @@
                         <!-- GPU Selection -->
                         <Border x:Name="gpuSelectCard"
                                 Grid.Column="0"
-                                Style="{StaticResource CardBorderStyle}"
-                                Height="{Binding ActualHeight, ElementName=gpuInfoCard}">
+                                Style="{StaticResource CardBorderStyle}">
                             <StackPanel Orientation="Vertical"
                                         Margin="4">
                                 <TextBlock Text="Select GPU"

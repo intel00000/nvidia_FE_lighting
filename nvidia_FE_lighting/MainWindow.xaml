@@ -46,8 +46,10 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- GPU Selection -->
-                        <Border Grid.Column="0"
-                                Style="{StaticResource CardBorderStyle}">
+                        <Border x:Name="gpuSelectCard"
+                                Grid.Column="0"
+                                Style="{StaticResource CardBorderStyle}"
+                                Height="{Binding ActualHeight, ElementName=gpuInfoCard}">
                             <StackPanel Orientation="Vertical"
                                         Margin="4">
                                 <TextBlock Text="Select GPU"
@@ -70,7 +72,8 @@
                         </Border>
 
                         <!-- GPU Info -->
-                        <Border Grid.Column="1"
+                        <Border x:Name="gpuInfoCard"
+                                Grid.Column="1"
                                 Style="{StaticResource CardBorderStyle}"
                                 Margin="12,0,0,0">
                             <StackPanel Orientation="Vertical"
@@ -114,6 +117,16 @@
                                 <TextBlock Text="Live state and controls"
                                            Margin="8,0,0,0"
                                            Foreground="{StaticResource TextSecondaryBrush}"/>
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Right"
+                                            Margin="12,0,0,0">
+                                    <Button x:Name="applyAllButton"
+                                            Content="Apply All"
+                                            IsEnabled="False"
+                                            HorizontalAlignment="Right"
+                                            Padding="12,6"
+                                            Click="applyAllButton_Click"/>
+                                </StackPanel>
                             </StackPanel>
                             <ScrollViewer VerticalScrollBarVisibility="Auto"
                                           Height="400">

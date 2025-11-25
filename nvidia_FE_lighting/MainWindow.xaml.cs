@@ -1,10 +1,11 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Security.Policy;
 using System.Windows;
 using System.Windows.Controls;
-using Xceed.Wpf.Toolkit;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using Xceed.Wpf.Toolkit;
 using static nvidia_FE_lighting.NvApiWrapper;
 
 namespace nvidia_FE_lighting
@@ -16,6 +17,7 @@ namespace nvidia_FE_lighting
 	{
 		private CustomIlluminationZoneControl[] globalZoneControls;
 		private uint currentGpuIndex;
+		private readonly Dictionary<(uint gpuIdx, int zoneIdx), byte> pendingBrightnessChanges = new();
 		private void SetStatus(string message)
 		{
 			statusText.Text = message;
@@ -41,7 +43,16 @@ namespace nvidia_FE_lighting
 			}
 
 			if (gpuSelectComboBox.Items.Count > 0)
+			{
 				gpuSelectComboBox.SelectedIndex = 0;
+				gpuSelectComboBox.SelectedItem = gpuSelectComboBox.Items[0];
+				gpuSelectComboBox.Text = gpuSelectComboBox.Items[0].ToString();
+				SetStatus($"Detected {gpuCount} GPU(s).");
+			}
+			else
+			{
+				SetStatus("No GPUs detected.");
+			}
 		}
 
 		// Event handler for GPU selection change
@@ -61,6 +72,8 @@ namespace nvidia_FE_lighting
 		{
 			SetStatus("Detecting illumination zones...");
 			gpuIlluminationZones.Items.Clear();
+			pendingBrightnessChanges.Clear();
+			applyAllButton.IsEnabled = false;
 
 			var zoneInfo = new NvApiWrapper.CustomIlluminationZonesInfo { zones = new NvApiWrapper.CustomIlluminationZonesInfoData[32] };
 			NvApiWrapper.GetIlluminationZonesInfo(gpuIndex, ref zoneInfo);
@@ -150,44 +163,12 @@ namespace nvidia_FE_lighting
 				return;
 			}
 
-			Xceed.Wpf.Toolkit.ColorPicker? colorPicker = null;
-			if (zoneType == "RGB" || zoneType == "RGBW")
-			{
-				byte r = zoneType switch
-				{
-					"RGB" => globalZoneControls[zoneIndex].manualColorData.rgb.r,
-					"RGBW" => globalZoneControls[zoneIndex].manualColorData.rgbw.r,
-					_ => (byte)0
-				};
-				byte g = zoneType switch
-				{
-					"RGB" => globalZoneControls[zoneIndex].manualColorData.rgb.g,
-					"RGBW" => globalZoneControls[zoneIndex].manualColorData.rgbw.g,
-					_ => (byte)0
-				};
-				byte b = zoneType switch
-				{
-					"RGB" => globalZoneControls[zoneIndex].manualColorData.rgb.b,
-					"RGBW" => globalZoneControls[zoneIndex].manualColorData.rgbw.b,
-					_ => (byte)0
-				};
-				colorPicker = new Xceed.Wpf.Toolkit.ColorPicker
-				{
-					SelectedColor = System.Windows.Media.Color.FromRgb(r, g, b),
-					Margin = new Thickness(0, 0, 0, 10),
-					DisplayColorAndName = true,
-					DisplayColorTooltip = true,
-				};
-				panel.Children.Add(colorPicker);
-			}
-
 			byte brightnessValue = zoneType switch
 			{
 				"RGB" => globalZoneControls[zoneIndex].manualColorData.rgb.brightness,
 				"RGBW" => globalZoneControls[zoneIndex].manualColorData.rgbw.brightness,
 				_ => globalZoneControls[zoneIndex].manualColorData.singleColor.brightness
 			};
-			panel.Children.Add(new TextBlock { Text = $"Active Brightness: {brightnessValue}%", Margin = new Thickness(0, 0, 0, 10) });
 			var brightnessSlider = new Slider
 			{
 				Minimum = 0,
@@ -195,54 +176,15 @@ namespace nvidia_FE_lighting
 				Value = brightnessValue,
 				TickFrequency = 1,
 				IsSnapToTickEnabled = true,
-				Margin = new Thickness(0, 0, 0, 10)
-			};
-			var brightnessLabel = new TextBlock { Text = $"Target Brightness: {brightnessValue}%", Margin = new Thickness(0, 0, 0, 10) };
-			brightnessSlider.ValueChanged += (s, e) =>
-			{
-				brightnessLabel.Text = $"Target Brightness: {brightnessSlider.Value}%";
-			};
-			panel.Children.Add(brightnessLabel);
-			panel.Children.Add(brightnessSlider);
-
-			var applyButton = new Button
-			{
-				Content = "Apply",
 				Margin = new Thickness(0, 0, 0, 10),
-				Tag = (gpuIndex, zoneIndex, colorPicker, brightnessSlider, zoneType)
+				AutoToolTipPlacement = AutoToolTipPlacement.TopLeft,
+				AutoToolTipPrecision = 0,
+				IsMoveToPointEnabled = true
 			};
-
-			applyButton.Click += (s, e) =>
-			{
-				var (gpuIdx, zoneIdx, picker, slider, type) = ((uint, int, Xceed.Wpf.Toolkit.ColorPicker, Slider, string))((Button)s).Tag;
-				var color = picker?.SelectedColor ?? System.Windows.Media.Colors.Black;
-				byte brightness = (byte)slider.Value;
-				bool result = false;
-
-				if (type == "RGB")
-				{
-					result = SetIlluminationZoneManualRGB(gpuIdx, (uint)zoneIdx, color.R, color.G, color.B, brightness, false);
-				}
-				else if (type == "RGBW")
-				{
-					result = SetIlluminationZoneManualRGBW(gpuIdx, (uint)zoneIdx, color.R, color.G, color.B, 0, brightness, false);
-				}
-				else
-				{
-					result = SetIlluminationZoneManualSingleColor(gpuIdx, (uint)zoneIdx, brightness, false);
-				}
-
-				if (!result)
-				{
-					Xceed.Wpf.Toolkit.MessageBox.Show("Failed to set illumination zone color");
-				}
-				else
-				{
-					SetStatus($"Updated zone {zoneIdx} on GPU {gpuIdx}");
-					PopulateIlluminationZones(gpuIdx);
-				}
-			};
-			panel.Children.Add(applyButton);
+			brightnessSlider.Tag = (gpuIndex, zoneIndex, zoneType);
+			brightnessSlider.AddHandler(Thumb.DragCompletedEvent, new DragCompletedEventHandler(BrightnessSlider_DragCompleted));
+			brightnessSlider.MouseLeftButtonUp += BrightnessSlider_MouseLeftButtonUp;
+			panel.Children.Add(brightnessSlider);
 		}
 
 		private void gpuSelectComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -251,6 +193,12 @@ namespace nvidia_FE_lighting
 			{
 				uint index = (uint)gpuSelectComboBox.SelectedIndex;
 				RefreshGpuInfo(index);
+				pendingBrightnessChanges.Clear();
+				applyAllButton.IsEnabled = false;
+			}
+			else
+			{
+				SetStatus("No GPU selected.");
 			}
 		}
 
@@ -266,6 +214,90 @@ namespace nvidia_FE_lighting
 			{
 				SetStatus("Select a GPU to detect zones.");
 			}
+		}
+
+		private void BrightnessSlider_DragCompleted(object sender, DragCompletedEventArgs e)
+		{
+			if (sender is Slider slider)
+			{
+				ApplySliderValue(slider);
+			}
+		}
+
+		private void BrightnessSlider_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		{
+			if (sender is Slider slider)
+			{
+				ApplySliderValue(slider);
+			}
+		}
+
+		private void ApplySliderValue(Slider slider)
+		{
+			var tag = ((uint gpuIdx, int zoneIdx, string zoneType))slider.Tag;
+			byte brightness = (byte)slider.Value;
+			QueueBrightnessChange(tag.gpuIdx, tag.zoneIdx, brightness);
+			if (!ApplyBrightnessForZone(tag.gpuIdx, tag.zoneIdx, tag.zoneType, brightness))
+			{
+				Xceed.Wpf.Toolkit.MessageBox.Show($"Failed to set brightness for zone {tag.zoneIdx}");
+				return;
+			}
+			SetStatus($"Set brightness {brightness}% on zone {tag.zoneIdx}");
+		}
+
+		private void QueueBrightnessChange(uint gpuIdx, int zoneIdx, byte brightness)
+		{
+			pendingBrightnessChanges[(gpuIdx, zoneIdx)] = brightness;
+			applyAllButton.IsEnabled = true;
+		}
+
+		private bool ApplyBrightnessForZone(uint gpuIdx, int zoneIdx, string zoneType, byte brightness)
+		{
+			bool result = false;
+			if (zoneType == "RGB")
+			{
+				var color = globalZoneControls[zoneIdx].manualColorData.rgb;
+				result = SetIlluminationZoneManualRGB(gpuIdx, (uint)zoneIdx, color.r, color.g, color.b, brightness, false);
+				globalZoneControls[zoneIdx].manualColorData.rgb.brightness = brightness;
+			}
+			else if (zoneType == "RGBW")
+			{
+				var color = globalZoneControls[zoneIdx].manualColorData.rgbw;
+				result = SetIlluminationZoneManualRGBW(gpuIdx, (uint)zoneIdx, color.r, color.g, color.b, color.w, brightness, false);
+				globalZoneControls[zoneIdx].manualColorData.rgbw.brightness = brightness;
+			}
+			else if (zoneType == "Color Fixed" || zoneType == "Single Color")
+			{
+				result = SetIlluminationZoneManualSingleColor(gpuIdx, (uint)zoneIdx, brightness, false);
+				globalZoneControls[zoneIdx].manualColorData.singleColor.brightness = brightness;
+			}
+			else
+			{
+				// Fallback for unexpected types: use single color brightness
+				result = SetIlluminationZoneManualSingleColor(gpuIdx, (uint)zoneIdx, brightness, false);
+			}
+			return result;
+		}
+
+		private void applyAllButton_Click(object sender, RoutedEventArgs e)
+		{
+			if (pendingBrightnessChanges.Count == 0)
+			{
+				applyAllButton.IsEnabled = false;
+				return;
+			}
+
+			foreach (var kvp in pendingBrightnessChanges)
+			{
+				var (gpuIdx, zoneIdx) = kvp.Key;
+				byte brightness = kvp.Value;
+				string zoneType = globalZoneControls[zoneIdx].zoneType;
+				ApplyBrightnessForZone(gpuIdx, zoneIdx, zoneType, brightness);
+			}
+
+			pendingBrightnessChanges.Clear();
+			applyAllButton.IsEnabled = false;
+			SetStatus("Applied brightness to all pending zones.");
 		}
 	}
 }

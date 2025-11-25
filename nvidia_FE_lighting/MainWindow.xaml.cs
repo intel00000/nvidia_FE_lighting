@@ -4,6 +4,7 @@ using System.Security.Policy;
 using System.Windows;
 using System.Windows.Controls;
 using Xceed.Wpf.Toolkit;
+using System.Windows.Media;
 using static nvidia_FE_lighting.NvApiWrapper;
 
 namespace nvidia_FE_lighting
@@ -15,6 +16,10 @@ namespace nvidia_FE_lighting
 	{
 		private CustomIlluminationZoneControl[] globalZoneControls;
 		private uint currentGpuIndex;
+		private void SetStatus(string message)
+		{
+			statusText.Text = message;
+		}
 
 		public MainWindow()
 		{
@@ -23,8 +28,10 @@ namespace nvidia_FE_lighting
 			if (!InitializeNvApi())
 			{
 				Xceed.Wpf.Toolkit.MessageBox.Show("Failed to initialize NVAPI");
+				SetStatus("NVAPI initialization failed.");
 				return;
 			}
+			SetStatus("NVAPI initialized.");
 
 			var gpuCount = GetNumberOfGPUs();
 			for (uint i = 0; i < gpuCount; i++)
@@ -46,11 +53,13 @@ namespace nvidia_FE_lighting
 			gpuSystemTypeText.Text = "System Type: " + Marshal.PtrToStringAnsi(GetSystemType(index));
 			gpuDriverVersionText.Text = "Driver Version: " + GetDriverVersion() / 100.00f;
 			gpuInterfaceVersionText.Text = "NVAPI Interface: " + Marshal.PtrToStringAnsi(GetInterfaceVersionString());
+			SetStatus($"Loaded GPU {index}");
 		}
 
 		// Event handler for the "Get Illumination Zones" button
 		private void PopulateIlluminationZones(uint gpuIndex)
 		{
+			SetStatus("Detecting illumination zones...");
 			gpuIlluminationZones.Items.Clear();
 
 			var zoneInfo = new NvApiWrapper.CustomIlluminationZonesInfo { zones = new NvApiWrapper.CustomIlluminationZonesInfoData[32] };
@@ -65,6 +74,7 @@ namespace nvidia_FE_lighting
 			if (zoneInfo.numIllumZones == 0)
 			{
 				gpuIlluminationZones.Items.Add(new TextBlock { Text = "No illumination zones found.", Margin = new Thickness(35, 0, 0, 10) });
+				SetStatus("No illumination zones found.");
 				return;
 			}
 
@@ -73,10 +83,9 @@ namespace nvidia_FE_lighting
 				var zone = zoneControls.zones[i];
 				var zoneMeta = zoneInfo.zones[i];
 
-				StackPanel panel = new StackPanel
+				var panel = new StackPanel
 				{
-					Orientation = Orientation.Vertical,
-					Margin = new Thickness(0, 0, 0, 10)
+					Orientation = Orientation.Vertical
 				};
 
 				TextBlock header = new TextBlock
@@ -91,15 +100,15 @@ namespace nvidia_FE_lighting
 				{
 					if (zone.zoneType == "RGB")
 					{
-						panel.Children.Add(new TextBlock { Text = $"Active RGB: R={zone.manualColorData.rgb.r}, G={zone.manualColorData.rgb.g}, B={zone.manualColorData.rgb.b}", Margin = new Thickness(0, 0, 0, 10) });
+						panel.Children.Add(new TextBlock { Text = $"Active RGB: R={zone.manualColorData.rgb.r}, G={zone.manualColorData.rgb.g}, B={zone.manualColorData.rgb.b}", Margin = new Thickness(0, 0, 0, 10), Foreground = (Brush)FindResource("TextSecondaryBrush") });
 					}
 					else if (zone.zoneType == "RGBW")
 					{
-						panel.Children.Add(new TextBlock { Text = $"Active RGBW: R={zone.manualColorData.rgbw.r}, G={zone.manualColorData.rgbw.g}, B={zone.manualColorData.rgbw.b}, W={zone.manualColorData.rgbw.w}", Margin = new Thickness(0, 0, 0, 10)});
+						panel.Children.Add(new TextBlock { Text = $"Active RGBW: R={zone.manualColorData.rgbw.r}, G={zone.manualColorData.rgbw.g}, B={zone.manualColorData.rgbw.b}, W={zone.manualColorData.rgbw.w}", Margin = new Thickness(0, 0, 0, 10), Foreground = (Brush)FindResource("TextSecondaryBrush") });
 					}
 					else if (zone.zoneType == "Invalid")
 					{
-						panel.Children.Add(new TextBlock { Text = "Invalid", Margin = new Thickness(0, 0, 0, 10)});
+						panel.Children.Add(new TextBlock { Text = "Invalid", Margin = new Thickness(0, 0, 0, 10), Foreground = (Brush)FindResource("TextSecondaryBrush") });
 					}
 				}
 				else if (zone.controlMode == "Piecewise Linear")
@@ -115,13 +124,24 @@ namespace nvidia_FE_lighting
 							"Active: Single Color" => $"  [{j}] Brightness={color.singleColor.brightness}",
 							_ => $"  [{j}] Unknown"
 						};
-						panel.Children.Add(new TextBlock { Text = colorText, Margin = new Thickness(0, 0, 0, 10)});
+						panel.Children.Add(new TextBlock { Text = colorText, Margin = new Thickness(0, 0, 0, 10), Foreground = (Brush)FindResource("TextSecondaryBrush") });
 					}
 				}
 
 				AddZoneControls(panel, zoneMeta.zoneType, gpuIndex, i);
-				gpuIlluminationZones.Items.Add(panel);
+				var card = new Border
+				{
+					Background = (Brush)FindResource("CardBackgroundBrush"),
+					BorderBrush = (Brush)FindResource("CardBorderBrush"),
+					BorderThickness = new Thickness(1),
+					CornerRadius = new CornerRadius(10),
+					Padding = new Thickness(12),
+					Margin = new Thickness(0, 0, 0, 12)
+				};
+				card.Child = panel;
+				gpuIlluminationZones.Items.Add(card);
 			}
+			SetStatus($"Found {zoneControls.numZones} illumination zone(s).");
 		}
 		private void AddZoneControls(StackPanel panel, string zoneType, uint gpuIndex, int zoneIndex)
 		{
@@ -218,6 +238,7 @@ namespace nvidia_FE_lighting
 				}
 				else
 				{
+					SetStatus($"Updated zone {zoneIdx} on GPU {gpuIdx}");
 					PopulateIlluminationZones(gpuIdx);
 				}
 			};
@@ -238,7 +259,12 @@ namespace nvidia_FE_lighting
 			if (gpuSelectComboBox.SelectedIndex >= 0)
 			{
 				uint index = (uint)gpuSelectComboBox.SelectedIndex;
+				SetStatus($"Detecting zones on GPU {index}...");
 				PopulateIlluminationZones(index);
+			}
+			else
+			{
+				SetStatus("Select a GPU to detect zones.");
 			}
 		}
 	}

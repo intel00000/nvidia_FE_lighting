@@ -1,0 +1,3 @@
+[submodule "NvApiWrapper/nvapi"]
+	path = NvApiWrapper/nvapi
+	url = https://github.com/NVIDIA/nvapi.git

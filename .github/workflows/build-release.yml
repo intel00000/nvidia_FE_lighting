@@ -1,0 +1,98 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Restore NuGet packages
+        run: nuget restore nvidia_FE_lighting.sln
+
+      - name: Build C++ NvApiWrapper
+        run: msbuild NvApiWrapper\NvApiWrapper.vcxproj /p:Configuration=Release /p:Platform=x64 /m
+
+      - name: Single-file application
+        run: dotnet publish nvidia_FE_lighting\nvidia_FE_lighting.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishReadyToRun=true -o publish
+
+      - name: Package application
+        run: |
+          mkdir release-package
+          Copy-Item -Path "publish\nvidia_FE_lighting.exe" -Destination "release-package\"
+        shell: pwsh
+
+      - name: Create README for release
+        run: |
+          @"
+          # NVIDIA FE Lighting Control
+
+          ## Installation
+          1. Extract nvidia_FE_lighting.exe
+          2. Run nvidia_FE_lighting.exe
+
+          That's it! This is a standalone executable with everything bundled.
+
+          ## Requirements
+          - Windows 10/11 (64-bit)
+          - NVIDIA drivers installed
+
+          ## Features
+          - Control RGB/RGBW illumination zones
+          - 5 profile slots for saving/loading configurations
+          - Apply settings automatically on startup
+          - Dark-themed modern UI
+
+          ## Usage
+          1. Select GPU from the dropdown
+          2. Click "Detect Zones" to find illumination zones
+          3. Adjust colors and brightness for each zone
+          4. Click "Apply All" to apply settings
+          5. Save to profiles for quick switching
+          6. Enable "Apply current settings on startup" for automatic application
+          "@ | Out-File -FilePath "release-package\README.txt" -Encoding UTF8
+        shell: pwsh
+
+      - name: Create ZIP archive
+        run: Compress-Archive -Path "release-package\*" -DestinationPath "FELighting-${{ github.ref_name }}.zip"
+        shell: pwsh
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: FELighting-${{ github.ref_name }}.zip
+          body: |
+            ## NVIDIA FE Lighting Control - ${{ github.ref_name }}
+
+            Download, extract, and run. Everything is bundled into one .exe file.
+
+            **Requirements:**
+            - Windows 10/11 (64-bit)
+            - NVIDIA drivers installed
+            - No .NET runtime required
+
+            **What's included:**
+            - nvidia_FE_lighting.exe - Standalone executable with everything bundled
+            - README.txt - Quick start guide
+
+            **Changes in this release:**
+            - See commit history for details
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

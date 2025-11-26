@@ -206,47 +206,15 @@
             </Setter>
         </Style>
 
-        <!-- Slider -->
-        <Style TargetType="Slider">
-            <Setter Property="Foreground" Value="{StaticResource HoverBrush}"/>
-            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+        <!-- Slider Repeat Button (invisible track buttons) -->
+        <Style x:Key="SliderButtonStyle" TargetType="RepeatButton">
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="IsTabStop" Value="false"/>
+            <Setter Property="Focusable" Value="false"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="Slider">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Border x:Name="TrackBackground"
-                                  Grid.Row="1"
-                                  Height="4"
-                                  Background="{StaticResource AccentBrush}"
-                                  BorderBrush="{StaticResource BorderColor}"
-                                  BorderThickness="0"
-                                  CornerRadius="2"
-                                  VerticalAlignment="Center">
-                                <Canvas Margin="0">
-                                    <Rectangle x:Name="PART_SelectionRange"
-                                             Height="4"
-                                             Fill="{StaticResource HoverBrush}"
-                                             Visibility="Hidden"/>
-                                </Canvas>
-                            </Border>
-                            <Track x:Name="PART_Track" Grid.Row="1">
-                                <Track.DecreaseRepeatButton>
-                                    <RepeatButton Command="Slider.DecreaseLarge" Style="{StaticResource SliderButtonStyle}"/>
-                                </Track.DecreaseRepeatButton>
-                                <Track.IncreaseRepeatButton>
-                                    <RepeatButton Command="Slider.IncreaseLarge" Style="{StaticResource SliderButtonStyle}"/>
-                                </Track.IncreaseRepeatButton>
-                                <Track.Thumb>
-                                    <Thumb x:Name="Thumb" Style="{StaticResource SliderThumbStyle}"/>
-                                </Track.Thumb>
-                            </Track>
-                        </Grid>
+                    <ControlTemplate TargetType="RepeatButton">
+                        <Rectangle Fill="Transparent"/>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -298,15 +266,47 @@
             </Setter>
         </Style>
 
-        <!-- Slider Repeat Button (invisible track buttons) -->
-        <Style x:Key="SliderButtonStyle" TargetType="RepeatButton">
-            <Setter Property="OverridesDefaultStyle" Value="true"/>
-            <Setter Property="IsTabStop" Value="false"/>
-            <Setter Property="Focusable" Value="false"/>
+        <!-- Slider -->
+        <Style TargetType="Slider">
+            <Setter Property="Foreground" Value="{StaticResource HoverBrush}"/>
+            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="RepeatButton">
-                        <Rectangle Fill="Transparent"/>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Border x:Name="TrackBackground"
+                                  Grid.Row="1"
+                                  Height="4"
+                                  Background="{StaticResource AccentBrush}"
+                                  BorderBrush="{StaticResource BorderColor}"
+                                  BorderThickness="0"
+                                  CornerRadius="2"
+                                  VerticalAlignment="Center">
+                                <Canvas Margin="0">
+                                    <Rectangle x:Name="PART_SelectionRange"
+                                             Height="4"
+                                             Fill="{StaticResource HoverBrush}"
+                                             Visibility="Hidden"/>
+                                </Canvas>
+                            </Border>
+                            <Track x:Name="PART_Track" Grid.Row="1">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="Slider.DecreaseLarge" Style="{StaticResource SliderButtonStyle}"/>
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="Slider.IncreaseLarge" Style="{StaticResource SliderButtonStyle}"/>
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb x:Name="Thumb" Style="{StaticResource SliderThumbStyle}"/>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>

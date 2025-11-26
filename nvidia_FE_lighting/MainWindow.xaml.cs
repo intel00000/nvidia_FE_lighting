@@ -63,6 +63,7 @@ namespace nvidia_FE_lighting
 		private readonly string profilesFolder;
 		private readonly string startupSettingsPath;
 		private readonly string appDataFolder;
+		private readonly string appDataExePath;
 		private void SetStatus(string message)
 		{
 			statusText.Text = message;
@@ -75,6 +76,7 @@ namespace nvidia_FE_lighting
 			appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "NvidiaFELighting");
 			profilesFolder = Path.Combine(appDataFolder, "Profiles");
 			startupSettingsPath = Path.Combine(appDataFolder, "startup_settings.json");
+			appDataExePath = Path.Combine(appDataFolder, "FELighting.exe");
 			Directory.CreateDirectory(profilesFolder);
 
 			if (!InitializeNvApi())
@@ -748,6 +750,42 @@ namespace nvidia_FE_lighting
 			}
 		}
 
+		private void EnsureAppDataExecutable()
+		{
+			try
+			{
+				// Get current running executable path
+				string currentExePath = Process.GetCurrentProcess().MainModule.FileName;
+				FileInfo currentFile = new FileInfo(currentExePath);
+
+				// Check if AppData copy exists
+				if (File.Exists(appDataExePath))
+				{
+					FileInfo appDataFile = new FileInfo(appDataExePath);
+
+					// Compare file size and last write time
+					if (currentFile.Length == appDataFile.Length &&
+						currentFile.LastWriteTimeUtc == appDataFile.LastWriteTimeUtc)
+					{
+						// Files are the same, no need to copy
+						return;
+					}
+				}
+
+				// Copy the running executable to AppData
+				File.Copy(currentExePath, appDataExePath, true);
+
+				// Preserve the last write time
+				File.SetLastWriteTimeUtc(appDataExePath, currentFile.LastWriteTimeUtc);
+
+				SetStatus("Executable copied to AppData");
+			}
+			catch (Exception ex)
+			{
+				Xceed.Wpf.Toolkit.MessageBox.Show($"Failed to copy executable to AppData: {ex.Message}");
+			}
+		}
+
 		private bool ApplyStartupSettings(StartupSettings settings)
 		{
 			if (settings == null || settings.Zones.Count == 0)
@@ -795,12 +833,14 @@ namespace nvidia_FE_lighting
 		{
 			try
 			{
+				// Ensure the executable is copied to AppData
+				EnsureAppDataExecutable();
+
 				using (RegistryKey key = Registry.CurrentUser.OpenSubKey(RegistryRunKey, true))
 				{
 					if (key != null)
 					{
-						string appPath = Process.GetCurrentProcess().MainModule.FileName;
-						key.SetValue(AppRegistryName, $"\"{appPath}\" --startup");
+						key.SetValue(AppRegistryName, $"\"{appDataExePath}\" --startup");
 						SetStatus("Startup enabled");
 					}
 				}

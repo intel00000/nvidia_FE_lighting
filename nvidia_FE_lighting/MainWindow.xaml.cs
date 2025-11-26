@@ -274,7 +274,7 @@ namespace nvidia_FE_lighting
 					Minimum = 0,
 					Maximum = 255,
 					Value = rgbw.w,
-					Width = 120,
+					Width = 200,
 					TickFrequency = 1,
 					IsSnapToTickEnabled = true,
 					AutoToolTipPlacement = AutoToolTipPlacement.TopLeft,

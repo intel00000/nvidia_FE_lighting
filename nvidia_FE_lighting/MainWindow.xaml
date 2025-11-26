@@ -52,10 +52,14 @@
                                     <Button x:Name="gpuSelectDetectIllumZones"
                                             Content="Detect Zones"
                                             Click="gpuSelectDetectIllumZones_Click"
-                                            Margin="12,0,0,0"
+                                            Margin="6,0,0,0"
                                             Foreground="{StaticResource TextPrimaryBrush}"
                                             Background="{StaticResource CardBorderBrush}"
-                                            BorderBrush="{StaticResource CardBorderBrush}"/>
+                                            BorderBrush="{StaticResource CardBorderBrush}" 
+                                            ScrollViewer.CanContentScroll="True" 
+                                            UseLayoutRounding="True" 
+                                            ClipToBounds="True" 
+                                            SnapsToDevicePixels="True"/>
                                 </StackPanel>
                             </StackPanel>
                         </Border>
@@ -91,32 +95,52 @@
 
                                 <StackPanel Grid.Column="0" Margin="4" HorizontalAlignment="Center">
                                     <TextBlock Text="Profile 1" FontSize="12" Margin="0,0,0,6" HorizontalAlignment="Center"/>
-                                    <Button x:Name="saveProfile1" Content="Save" Click="SaveProfile_Click" Tag="1" Margin="2"/>
-                                    <Button x:Name="loadProfile1" Content="Load" Click="LoadProfile_Click" Tag="1" Margin="2"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button x:Name="saveProfile1" Content="Save" Click="SaveProfile_Click" Tag="1" Margin="6" HorizontalAlignment="Right"
+                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                        <Button x:Name="loadProfile1" Content="Load" Click="LoadProfile_Click" Tag="1" Margin="6" HorizontalAlignment="Right"
+                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                    </StackPanel>
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1" Margin="4" HorizontalAlignment="Center">
                                     <TextBlock Text="Profile 2" FontSize="12" Margin="0,0,0,6" HorizontalAlignment="Center"/>
-                                    <Button x:Name="saveProfile2" Content="Save" Click="SaveProfile_Click" Tag="2" Margin="2"/>
-                                    <Button x:Name="loadProfile2" Content="Load" Click="LoadProfile_Click" Tag="2" Margin="2"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button x:Name="saveProfile2" Content="Save" Click="SaveProfile_Click" Tag="2" Margin="6" HorizontalAlignment="Right"
+                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                        <Button x:Name="loadProfile2" Content="Load" Click="LoadProfile_Click" Tag="2" Margin="6" HorizontalAlignment="Right"
+                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                    </StackPanel>
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="2" Margin="4" HorizontalAlignment="Center">
                                     <TextBlock Text="Profile 3" FontSize="12" Margin="0,0,0,6" HorizontalAlignment="Center"/>
-                                    <Button x:Name="saveProfile3" Content="Save" Click="SaveProfile_Click" Tag="3" Margin="2"/>
-                                    <Button x:Name="loadProfile3" Content="Load" Click="LoadProfile_Click" Tag="3" Margin="2"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button x:Name="saveProfile3" Content="Save" Click="SaveProfile_Click" Tag="3" Margin="6" HorizontalAlignment="Right"
+                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                        <Button x:Name="loadProfile3" Content="Load" Click="LoadProfile_Click" Tag="3" Margin="6" HorizontalAlignment="Right"
+                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                    </StackPanel>
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="3" Margin="4" HorizontalAlignment="Center">
                                     <TextBlock Text="Profile 4" FontSize="12" Margin="0,0,0,6" HorizontalAlignment="Center"/>
-                                    <Button x:Name="saveProfile4" Content="Save" Click="SaveProfile_Click" Tag="4" Margin="2"/>
-                                    <Button x:Name="loadProfile4" Content="Load" Click="LoadProfile_Click" Tag="4" Margin="2"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button x:Name="saveProfile4" Content="Save" Click="SaveProfile_Click" Tag="4" Margin="6" HorizontalAlignment="Right"
+                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                        <Button x:Name="loadProfile4" Content="Load" Click="LoadProfile_Click" Tag="4" Margin="6" HorizontalAlignment="Right"
+                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                    </StackPanel>
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="4" Margin="4" HorizontalAlignment="Center">
                                     <TextBlock Text="Profile 5" FontSize="12" Margin="0,0,0,6" HorizontalAlignment="Center"/>
-                                    <Button x:Name="saveProfile5" Content="Save" Click="SaveProfile_Click" Tag="5" Margin="2"/>
-                                    <Button x:Name="loadProfile5" Content="Load" Click="LoadProfile_Click" Tag="5" Margin="2"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button x:Name="saveProfile5" Content="Save" Click="SaveProfile_Click" Tag="5" Margin="6" HorizontalAlignment="Right"
+                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                        <Button x:Name="loadProfile5" Content="Load" Click="LoadProfile_Click" Tag="5" Margin="6" HorizontalAlignment="Right"
+                                            Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                    </StackPanel>
                                 </StackPanel>
                             </Grid>
                             <CheckBox x:Name="applyOnStartupCheckBox"
@@ -142,8 +166,8 @@
                                 </ItemsControl>
                             </ScrollViewer>
                             <Button x:Name="applyAllButton" Content="Apply All" IsEnabled="False" HorizontalAlignment="Right"
-                                            Click="applyAllButton_Click"
-                                            Style="{StaticResource SecondaryButtonStyle}" Padding="0,6,0,0"/>
+                                            Click="applyAllButton_Click" Margin="6"
+                                            Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
                         </StackPanel>
                     </Border>
 

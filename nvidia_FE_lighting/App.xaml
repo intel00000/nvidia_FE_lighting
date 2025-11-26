@@ -10,6 +10,7 @@
         <Color x:Key="BorderColor">#22304A</Color>
         <Color x:Key="AccentColor">#1C2740</Color>
         <Color x:Key="AccentAltColor">#1F2937</Color>
+        <Color x:Key="HoverColor">#2D3F5A</Color>
         <Color x:Key="TextPrimaryColor">#E5E7EB</Color>
         <Color x:Key="TextSecondaryColor">#9CA3AF</Color>
 
@@ -19,6 +20,7 @@
         <SolidColorBrush x:Key="CardBorderBrush" Color="{StaticResource BorderColor}"/>
         <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}"/>
         <SolidColorBrush x:Key="AccentAltBrush" Color="{StaticResource AccentAltColor}"/>
+        <SolidColorBrush x:Key="HoverBrush" Color="{StaticResource HoverColor}"/>
         <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}"/>
         <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}"/>
 
@@ -44,6 +46,30 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                              Background="{TemplateBinding Background}"
+                              BorderBrush="{TemplateBinding BorderBrush}"
+                              BorderThickness="{TemplateBinding BorderThickness}"
+                              CornerRadius="4"
+                              Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource HoverBrush}"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource HoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource AccentAltBrush}"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource AccentAltBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <Style x:Key="SecondaryButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
@@ -69,10 +95,45 @@
                                         Grid.Column="2"
                                         Focusable="False"
                                         IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                        ClickMode="Press"
-                                        Background="{StaticResource CardBackgroundBrush}"
-                                        BorderBrush="{StaticResource CardBorderBrush}"
-                                        BorderThickness="1">
+                                        ClickMode="Press">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="ToggleBorder"
+                                              Background="{StaticResource CardBackgroundBrush}"
+                                              BorderBrush="{StaticResource CardBorderBrush}"
+                                              BorderThickness="1"
+                                              CornerRadius="4">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="20"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ContentPresenter Grid.Column="0"
+                                                                HorizontalAlignment="Left"
+                                                                VerticalAlignment="Center"
+                                                                Margin="8,4"
+                                                                Content="{TemplateBinding Content}"
+                                                                IsHitTestVisible="False"/>
+                                                <Path Grid.Column="1"
+                                                    x:Name="Arrow"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    Data="M 0 0 L 4 4 L 8 0 Z"
+                                                    Fill="{StaticResource TextSecondaryBrush}"/>
+                                            </Grid>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="ToggleBorder" Property="Background" Value="{StaticResource HoverBrush}"/>
+                                                <Setter TargetName="ToggleBorder" Property="BorderBrush" Value="{StaticResource HoverBrush}"/>
+                                            </Trigger>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter TargetName="ToggleBorder" Property="Background" Value="{StaticResource HoverBrush}"/>
+                                                <Setter TargetName="ToggleBorder" Property="BorderBrush" Value="{StaticResource HoverBrush}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
@@ -86,12 +147,6 @@
                                                     ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                                     ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
                                                     IsHitTestVisible="False"/>
-                                    <Path Grid.Column="1"
-                                        x:Name="Arrow"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Data="M 0 0 L 4 4 L 8 0 Z"
-                                        Fill="{StaticResource TextSecondaryBrush}"/>
                                 </Grid>
                             </ToggleButton>
                             <Popup x:Name="Popup"
@@ -137,10 +192,10 @@
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsHighlighted" Value="True">
-                                            <Setter TargetName="Border" Property="Background" Value="{StaticResource AccentBrush}"/>
+                                            <Setter TargetName="Border" Property="Background" Value="{StaticResource HoverBrush}"/>
                                         </Trigger>
                                         <Trigger Property="IsSelected" Value="True">
-                                            <Setter TargetName="Border" Property="Background" Value="{StaticResource AccentBrush}"/>
+                                            <Setter TargetName="Border" Property="Background" Value="{StaticResource HoverBrush}"/>
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>

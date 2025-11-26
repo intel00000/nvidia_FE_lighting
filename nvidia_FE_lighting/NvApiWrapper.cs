@@ -136,5 +136,8 @@ namespace nvidia_FE_lighting
 
         [DllImport(DllName)]
         public static extern bool SetIlluminationZoneManualSingleColor(uint gpuIndex, uint zoneIndex, byte brightness, bool Default);
+
+        [DllImport(DllName)]
+        public static extern bool SetIlluminationZoneManualColorFixed(uint gpuIndex, uint zoneIndex, byte brightness, bool Default);
     }
 }

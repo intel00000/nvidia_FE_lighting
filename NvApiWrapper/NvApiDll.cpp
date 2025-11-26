@@ -655,6 +655,36 @@ NVAPI_DLL bool SetIlluminationZoneManualSingleColor(unsigned int gpuIndex, unsig
 	return NvAPI_GPU_ClientIllumZonesSetControl(gpuHandle, &illumControlParams) == NVAPI_OK;
 }
 
+NVAPI_DLL bool SetIlluminationZoneManualColorFixed(unsigned int gpuIndex, unsigned int zoneIndex, uint8_t brightness, bool Default = false)
+{
+	NvPhysicalGpuHandle gpuHandle = GetGPUHandle(gpuIndex);
+	if (!gpuHandle)
+		return false;
+
+	NV_GPU_CLIENT_ILLUM_ZONE_CONTROL_PARAMS illumControlParams = {0};
+	illumControlParams.version = NV_GPU_CLIENT_ILLUM_ZONE_CONTROL_PARAMS_VER;
+
+	if (NvAPI_GPU_ClientIllumZonesGetControl(gpuHandle, &illumControlParams) != NVAPI_OK)
+		return false;
+	if (zoneIndex >= illumControlParams.numIllumZonesControl)
+		return false;
+
+	auto &illuminationZoneControl = illumControlParams.zones[zoneIndex];
+	if (illuminationZoneControl.type != NV_GPU_CLIENT_ILLUM_ZONE_TYPE_COLOR_FIXED)
+		return false;
+	if (illuminationZoneControl.ctrlMode != NV_GPU_CLIENT_ILLUM_CTRL_MODE_MANUAL)
+		return false;
+
+	auto &colorFixedData = illuminationZoneControl.data.colorFixed.data.manualColorFixed.colorFixedParams;
+	colorFixedData.brightnessPct = brightness;
+
+	if (Default)
+		illumControlParams.bDefault = NV_TRUE;
+	else
+		illumControlParams.bDefault = NV_FALSE;
+	return NvAPI_GPU_ClientIllumZonesSetControl(gpuHandle, &illumControlParams) == NVAPI_OK;
+}
+
 NVAPI_DLL void Testing()
 {
 	// Test the NVAPI functions

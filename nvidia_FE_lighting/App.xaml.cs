@@ -123,21 +123,53 @@ namespace nvidia_FE_lighting
                 int successCount = 0;
                 foreach (var zone in settings.Zones)
                 {
+                    File.AppendAllText(logPath, $"  Applying zone {zone.ZoneIndex} ({zone.ZoneType}): brightness={zone.Brightness}\n");
+
                     bool success = false;
                     if (zone.ZoneType == "RGB")
                     {
                         success = SetIlluminationZoneManualRGB(gpuIndex, (uint)zone.ZoneIndex,
                             zone.R, zone.G, zone.B, zone.Brightness, false);
+                        File.AppendAllText(logPath, $"    RGB result: {success}\n");
                     }
                     else if (zone.ZoneType == "RGBW")
                     {
                         success = SetIlluminationZoneManualRGBW(gpuIndex, (uint)zone.ZoneIndex,
                             zone.R, zone.G, zone.B, zone.W, zone.Brightness, false);
+                        File.AppendAllText(logPath, $"    RGBW result: {success}\n");
                     }
-                    else
+                    else if (zone.ZoneType == "Single Color")
                     {
                         success = SetIlluminationZoneManualSingleColor(gpuIndex, (uint)zone.ZoneIndex,
                             zone.Brightness, false);
+                        File.AppendAllText(logPath, $"    SingleColor result: {success}\n");
+
+                        // Try ColorFixed as fallback
+                        if (!success)
+                        {
+                            success = SetIlluminationZoneManualColorFixed(gpuIndex, (uint)zone.ZoneIndex,
+                                zone.Brightness, false);
+                            File.AppendAllText(logPath, $"    ColorFixed fallback result: {success}\n");
+                        }
+                    }
+                    else if (zone.ZoneType == "Color Fixed")
+                    {
+                        success = SetIlluminationZoneManualColorFixed(gpuIndex, (uint)zone.ZoneIndex,
+                            zone.Brightness, false);
+                        File.AppendAllText(logPath, $"    ColorFixed result: {success}\n");
+                    }
+                    else
+                    {
+                        File.AppendAllText(logPath, $"    Unknown zone type, trying both\n");
+                        success = SetIlluminationZoneManualSingleColor(gpuIndex, (uint)zone.ZoneIndex,
+                            zone.Brightness, false);
+                        File.AppendAllText(logPath, $"    SingleColor result: {success}\n");
+                        if (!success)
+                        {
+                            success = SetIlluminationZoneManualColorFixed(gpuIndex, (uint)zone.ZoneIndex,
+                                zone.Brightness, false);
+                            File.AppendAllText(logPath, $"    ColorFixed result: {success}\n");
+                        }
                     }
 
                     if (success) successCount++;

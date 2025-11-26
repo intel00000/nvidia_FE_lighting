@@ -61,6 +61,7 @@ namespace nvidia_FE_lighting
         private readonly string startupSettingsPath;
         private readonly string appDataFolder;
         private readonly string appDataExePath;
+        private bool isInitializing = true;
         private void SetStatus(string message)
         {
             statusText.Text = message;
@@ -105,6 +106,9 @@ namespace nvidia_FE_lighting
 
             // Set checkbox state based on registry
             applyOnStartupCheckBox.IsChecked = IsStartupEnabled();
+
+            // Initialization complete - enable event handlers
+            isInitializing = false;
         }
 
         // event handler for GPU selection
@@ -394,15 +398,25 @@ namespace nvidia_FE_lighting
                 result = SetIlluminationZoneManualRGBW(gpuIdx, (uint)zoneIdx, color.r, color.g, color.b, color.w, brightness, false);
                 globalZoneControls[zoneIdx].manualColorData.rgbw.brightness = brightness;
             }
-            else if (zoneType == "Color Fixed" || zoneType == "Single Color")
+            else if (zoneType == "Single Color")
             {
                 result = SetIlluminationZoneManualSingleColor(gpuIdx, (uint)zoneIdx, brightness, false);
-                globalZoneControls[zoneIdx].manualColorData.singleColor.brightness = brightness;
+                if (result) globalZoneControls[zoneIdx].manualColorData.singleColor.brightness = brightness;
+            }
+            else if (zoneType == "Color Fixed")
+            {
+                result = SetIlluminationZoneManualColorFixed(gpuIdx, (uint)zoneIdx, brightness, false);
+                if (result) globalZoneControls[zoneIdx].manualColorData.singleColor.brightness = brightness;
             }
             else
             {
-                // Fallback for unexpected types: use single color brightness
+                // Unknown zone type, try both single color and color fixed
                 result = SetIlluminationZoneManualSingleColor(gpuIdx, (uint)zoneIdx, brightness, false);
+                if (!result)
+                {
+                    result = SetIlluminationZoneManualColorFixed(gpuIdx, (uint)zoneIdx, brightness, false);
+                }
+                if (result) globalZoneControls[zoneIdx].manualColorData.singleColor.brightness = brightness;
             }
             return result;
         }
@@ -886,6 +900,8 @@ namespace nvidia_FE_lighting
         // Checkbox event handlers
         private void ApplyOnStartupCheckBox_Checked(object sender, RoutedEventArgs e)
         {
+            if (isInitializing) return;
+
             // Save current settings
             SaveStartupSettings();
 

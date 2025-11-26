@@ -93,6 +93,8 @@ NVAPI_DLL bool GetGPUPCIIdentifiers(unsigned int index, unsigned long *pDeviceId
 NVAPI_DLL bool GetGPUBusId(unsigned int index, unsigned long *pBusId);
 NVAPI_DLL const char *GetIlluminationZonesInfo(unsigned int index, CustomIlluminationZonesInfo *pCustomIlluminationZonesInfo);
 NVAPI_DLL const char *GetIlluminationZonesControl(unsigned int index, bool Default, CustomIlluminationZoneControls *pCustomIlluminationZoneControls);
+NVAPI_DLL bool SetIlluminationZoneManualRGB(unsigned int gpuIndex, unsigned int zoneIndex, uint8_t red, uint8_t green, uint8_t blue, uint8_t brightness, bool Default);
 NVAPI_DLL bool SetIlluminationZoneManualRGBW(unsigned int gpuIndex, unsigned int zoneIndex, uint8_t red, uint8_t green, uint8_t blue, uint8_t white, uint8_t brightness, bool Default);
 NVAPI_DLL bool SetIlluminationZoneManualSingleColor(unsigned int gpuIndex, unsigned int zoneIndex, uint8_t brightness, bool Default);
+NVAPI_DLL bool SetIlluminationZoneManualColorFixed(unsigned int gpuIndex, unsigned int zoneIndex, uint8_t brightness, bool Default);
 NVAPI_DLL void Testing();

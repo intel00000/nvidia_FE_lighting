@@ -23,4 +23,12 @@
     <PackageReference Include="Extended.Wpf.Toolkit" Version="5.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Include native DLL for publishing -->
+    <None Include="..\x64\Release\NvApiWrapper.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>NvApiWrapper.dll</Link>
+    </None>
+  </ItemGroup>
+
 </Project>

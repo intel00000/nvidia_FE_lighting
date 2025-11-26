@@ -73,7 +73,7 @@ namespace nvidia_FE_lighting
 
 				File.AppendAllText(logPath, "NVAPI initialized successfully.\n");
 
-				// Get GPU count and select first GPU
+				// Get GPU count and verify saved GPU index exists
 				uint gpuCount = GetNumberOfGPUs();
 				if (gpuCount == 0)
 				{
@@ -82,8 +82,16 @@ namespace nvidia_FE_lighting
 					return;
 				}
 
-				uint gpuIndex = 0;
-				File.AppendAllText(logPath, $"Found {gpuCount} GPU(s). Using GPU index {gpuIndex}.\n");
+				uint gpuIndex = settings.GpuIndex;
+				File.AppendAllText(logPath, $"Found {gpuCount} GPU(s). Using saved GPU index {gpuIndex}.\n");
+
+				// Verify GPU index is valid
+				if (gpuIndex >= gpuCount)
+				{
+					File.AppendAllText(logPath, $"Saved GPU index {gpuIndex} is out of range (only {gpuCount} GPU(s) detected). Exiting.\n");
+					DeinitializeNvApi();
+					return;
+				}
 
 				// Get current GPU identifier
 				uint busId, deviceId, subSystemId, revisionId, extDeviceId;

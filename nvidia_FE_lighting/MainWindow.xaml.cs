@@ -50,6 +50,7 @@ namespace nvidia_FE_lighting
 	public class StartupSettings
 	{
 		public int DelaySeconds { get; set; } = 10;
+		public uint GpuIndex { get; set; }
 		public GpuIdentifier GpuIdentifier { get; set; } = new();
 		public List<ZoneProfile> Zones { get; set; } = new();
 	}
@@ -682,6 +683,7 @@ namespace nvidia_FE_lighting
 			var settings = new StartupSettings
 			{
 				DelaySeconds = 10,
+				GpuIndex = currentGpuIndex,
 				GpuIdentifier = gpuId,
 				Zones = new List<ZoneProfile>()
 			};

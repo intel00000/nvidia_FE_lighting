@@ -11,13 +11,7 @@
         MinWidth="800"
         MinHeight="600">
     <Grid Margin="12">
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
-        <Border Grid.Row="0"
-                CornerRadius="18"
+        <Border CornerRadius="18"
                 BorderThickness="0">
             <Border.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -152,29 +146,28 @@
                                             Style="{StaticResource SecondaryButtonStyle}"/>
                         </StackPanel>
                     </Border>
+
+                    <!-- Status bar -->
+                    <Border Background="{StaticResource SurfaceBrush}"
+                            BorderBrush="{StaticResource CardBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="10"
+                            Margin="0,0,0,12">
+                        <DockPanel>
+                            <TextBlock x:Name="statusText"
+                                       Text="Ready"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       VerticalAlignment="Center"/>
+                            <Ellipse Width="10"
+                                     Height="10"
+                                     Fill="{StaticResource AccentAltBrush}"
+                                     Margin="8,0,0,0"
+                                     VerticalAlignment="Center"/>
+                        </DockPanel>
+                    </Border>
                 </StackPanel>
             </ScrollViewer>
-        </Border>
-
-        <!-- Status bar -->
-        <Border Grid.Row="1"
-                Background="{StaticResource SurfaceBrush}"
-                BorderBrush="{StaticResource CardBorderBrush}"
-                BorderThickness="1"
-                CornerRadius="10"
-                Padding="10"
-                Margin="0,12,0,0">
-            <DockPanel>
-                <TextBlock x:Name="statusText"
-                           Text="Ready"
-                           Foreground="{StaticResource TextSecondaryBrush}"
-                           VerticalAlignment="Center"/>
-                <Ellipse Width="10"
-                         Height="10"
-                         Fill="{StaticResource AccentAltBrush}"
-                         Margin="8,0,0,0"
-                         VerticalAlignment="Center"/>
-            </DockPanel>
         </Border>
     </Grid>
 </Window>

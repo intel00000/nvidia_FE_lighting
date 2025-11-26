@@ -55,11 +55,7 @@
                                             Margin="6,0,0,0"
                                             Foreground="{StaticResource TextPrimaryBrush}"
                                             Background="{StaticResource CardBorderBrush}"
-                                            BorderBrush="{StaticResource CardBorderBrush}" 
-                                            ScrollViewer.CanContentScroll="True" 
-                                            UseLayoutRounding="True" 
-                                            ClipToBounds="True" 
-                                            SnapsToDevicePixels="True"/>
+                                            BorderBrush="{StaticResource CardBorderBrush}"/>
                                 </StackPanel>
                             </StackPanel>
                         </Border>
@@ -97,9 +93,9 @@
                                     <TextBlock Text="Profile 1" FontSize="12" Margin="0,0,0,6" HorizontalAlignment="Center"/>
                                     <StackPanel Orientation="Horizontal">
                                         <Button x:Name="saveProfile1" Content="Save" Click="SaveProfile_Click" Tag="1" Margin="6" HorizontalAlignment="Right"
-                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6"/>
                                         <Button x:Name="loadProfile1" Content="Load" Click="LoadProfile_Click" Tag="1" Margin="6" HorizontalAlignment="Right"
-                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6"/>
                                     </StackPanel>
                                 </StackPanel>
 
@@ -107,9 +103,9 @@
                                     <TextBlock Text="Profile 2" FontSize="12" Margin="0,0,0,6" HorizontalAlignment="Center"/>
                                     <StackPanel Orientation="Horizontal">
                                         <Button x:Name="saveProfile2" Content="Save" Click="SaveProfile_Click" Tag="2" Margin="6" HorizontalAlignment="Right"
-                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6"/>
                                         <Button x:Name="loadProfile2" Content="Load" Click="LoadProfile_Click" Tag="2" Margin="6" HorizontalAlignment="Right"
-                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6"/>
                                     </StackPanel>
                                 </StackPanel>
 
@@ -117,9 +113,9 @@
                                     <TextBlock Text="Profile 3" FontSize="12" Margin="0,0,0,6" HorizontalAlignment="Center"/>
                                     <StackPanel Orientation="Horizontal">
                                         <Button x:Name="saveProfile3" Content="Save" Click="SaveProfile_Click" Tag="3" Margin="6" HorizontalAlignment="Right"
-                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6"/>
                                         <Button x:Name="loadProfile3" Content="Load" Click="LoadProfile_Click" Tag="3" Margin="6" HorizontalAlignment="Right"
-                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6"/>
                                     </StackPanel>
                                 </StackPanel>
 
@@ -127,9 +123,9 @@
                                     <TextBlock Text="Profile 4" FontSize="12" Margin="0,0,0,6" HorizontalAlignment="Center"/>
                                     <StackPanel Orientation="Horizontal">
                                         <Button x:Name="saveProfile4" Content="Save" Click="SaveProfile_Click" Tag="4" Margin="6" HorizontalAlignment="Right"
-                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6"/>
                                         <Button x:Name="loadProfile4" Content="Load" Click="LoadProfile_Click" Tag="4" Margin="6" HorizontalAlignment="Right"
-                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6"/>
                                     </StackPanel>
                                 </StackPanel>
 
@@ -137,9 +133,9 @@
                                     <TextBlock Text="Profile 5" FontSize="12" Margin="0,0,0,6" HorizontalAlignment="Center"/>
                                     <StackPanel Orientation="Horizontal">
                                         <Button x:Name="saveProfile5" Content="Save" Click="SaveProfile_Click" Tag="5" Margin="6" HorizontalAlignment="Right"
-                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                                Style="{StaticResource SecondaryButtonStyle}" Padding="6"/>
                                         <Button x:Name="loadProfile5" Content="Load" Click="LoadProfile_Click" Tag="5" Margin="6" HorizontalAlignment="Right"
-                                            Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                            Style="{StaticResource SecondaryButtonStyle}" Padding="6"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Grid>
@@ -148,7 +144,8 @@
                                      Margin="0,6,0,0"
                                      Foreground="{StaticResource TextPrimaryBrush}"
                                      Checked="ApplyOnStartupCheckBox_Checked"
-                                     Unchecked="ApplyOnStartupCheckBox_Unchecked" HorizontalContentAlignment="Stretch" HorizontalAlignment="Right"/>
+                                     Unchecked="ApplyOnStartupCheckBox_Unchecked"
+                                     HorizontalAlignment="Right"/>
                         </StackPanel>
                     </Border>
 
@@ -167,7 +164,7 @@
                             </ScrollViewer>
                             <Button x:Name="applyAllButton" Content="Apply All" IsEnabled="False" HorizontalAlignment="Right"
                                             Click="applyAllButton_Click" Margin="6"
-                                            Style="{StaticResource SecondaryButtonStyle}" Padding="6,6,6,6" UseLayoutRounding="True" ScrollViewer.CanContentScroll="True"/>
+                                            Style="{StaticResource SecondaryButtonStyle}" Padding="6"/>
                         </StackPanel>
                     </Border>
 

@@ -206,6 +206,112 @@
             </Setter>
         </Style>
 
+        <!-- Slider -->
+        <Style TargetType="Slider">
+            <Setter Property="Foreground" Value="{StaticResource HoverBrush}"/>
+            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Border x:Name="TrackBackground"
+                                  Grid.Row="1"
+                                  Height="4"
+                                  Background="{StaticResource AccentBrush}"
+                                  BorderBrush="{StaticResource BorderColor}"
+                                  BorderThickness="0"
+                                  CornerRadius="2"
+                                  VerticalAlignment="Center">
+                                <Canvas Margin="0">
+                                    <Rectangle x:Name="PART_SelectionRange"
+                                             Height="4"
+                                             Fill="{StaticResource HoverBrush}"
+                                             Visibility="Hidden"/>
+                                </Canvas>
+                            </Border>
+                            <Track x:Name="PART_Track" Grid.Row="1">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="Slider.DecreaseLarge" Style="{StaticResource SliderButtonStyle}"/>
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="Slider.IncreaseLarge" Style="{StaticResource SliderButtonStyle}"/>
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb x:Name="Thumb" Style="{StaticResource SliderThumbStyle}"/>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Slider Thumb -->
+        <Style x:Key="SliderThumbStyle" TargetType="Thumb">
+            <Setter Property="Background" Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource HoverBrush}"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Height" Value="18"/>
+            <Setter Property="Width" Value="18"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Thumb">
+                        <Grid>
+                            <Ellipse x:Name="ellipse"
+                                   Fill="{TemplateBinding Background}"
+                                   Stroke="{TemplateBinding BorderBrush}"
+                                   StrokeThickness="2"/>
+                            <ToolTip x:Name="tooltip"
+                                   Placement="Top"
+                                   IsOpen="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ToolTip.Template>
+                                    <ControlTemplate>
+                                        <Border Background="{StaticResource CardBackgroundBrush}"
+                                              BorderBrush="{StaticResource HoverBrush}"
+                                              BorderThickness="1"
+                                              CornerRadius="4"
+                                              Padding="8,4">
+                                            <TextBlock Text="{Binding Value, RelativeSource={RelativeSource AncestorType=Slider}, StringFormat='{}{0:F0}'}"
+                                                     Foreground="{StaticResource TextPrimaryBrush}"
+                                                     FontWeight="SemiBold"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </ToolTip.Template>
+                            </ToolTip>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ellipse" Property="Fill" Value="{StaticResource HoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsDragging" Value="True">
+                                <Setter TargetName="ellipse" Property="Fill" Value="{StaticResource HoverBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Slider Repeat Button (invisible track buttons) -->
+        <Style x:Key="SliderButtonStyle" TargetType="RepeatButton">
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="IsTabStop" Value="false"/>
+            <Setter Property="Focusable" Value="false"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RepeatButton">
+                        <Rectangle Fill="Transparent"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Card style -->
         <Style x:Key="CardBorderStyle" TargetType="Border">
             <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>

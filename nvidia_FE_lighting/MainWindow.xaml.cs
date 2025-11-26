@@ -277,8 +277,6 @@ namespace nvidia_FE_lighting
 					Width = 200,
 					TickFrequency = 1,
 					IsSnapToTickEnabled = true,
-					AutoToolTipPlacement = AutoToolTipPlacement.TopLeft,
-					AutoToolTipPrecision = 0,
 					IsMoveToPointEnabled = true,
 					VerticalAlignment = VerticalAlignment.Center
 				};
@@ -309,8 +307,6 @@ namespace nvidia_FE_lighting
 				Width = 200,
 				TickFrequency = 1,
 				IsSnapToTickEnabled = true,
-				AutoToolTipPlacement = AutoToolTipPlacement.TopLeft,
-				AutoToolTipPrecision = 0,
 				IsMoveToPointEnabled = true,
 				VerticalAlignment = VerticalAlignment.Center
 			};

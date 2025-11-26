@@ -116,6 +116,12 @@ namespace nvidia_FE_lighting
 		[DllImport(DllName, CharSet = CharSet.Ansi)]
 		public static extern IntPtr GetSystemType(uint index);
 
+		[DllImport(DllName)]
+		public static extern bool GetGPUPCIIdentifiers(uint index, out uint deviceId, out uint subSystemId, out uint revisionId, out uint extDeviceId);
+
+		[DllImport(DllName)]
+		public static extern bool GetGPUBusId(uint index, out uint busId);
+
 		[DllImport(DllName, CharSet = CharSet.Ansi)]
 		public static extern IntPtr GetIlluminationZonesInfo(uint index, ref CustomIlluminationZonesInfo info);
 

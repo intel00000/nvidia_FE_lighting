@@ -167,6 +167,54 @@ NVAPI_DLL const char *GetSystemType(unsigned int index)
 	return systemType;
 }
 
+NVAPI_DLL bool GetGPUPCIIdentifiers(unsigned int index, unsigned long *pDeviceId, unsigned long *pSubSystemId, unsigned long *pRevisionId, unsigned long *pExtDeviceId)
+{
+	NvPhysicalGpuHandle gpuHandle = GetGPUHandle(index);
+	if (!gpuHandle)
+		return false;
+
+	NvU32 deviceId = 0, subSystemId = 0, revisionId = 0, extDeviceId = 0;
+	NvAPI_Status status = NvAPI_GPU_GetPCIIdentifiers(gpuHandle, &deviceId, &subSystemId, &revisionId, &extDeviceId);
+
+	if (status != NVAPI_OK)
+	{
+		GetNvApiErrorMessage(status);
+		return false;
+	}
+
+	if (pDeviceId)
+		*pDeviceId = deviceId;
+	if (pSubSystemId)
+		*pSubSystemId = subSystemId;
+	if (pRevisionId)
+		*pRevisionId = revisionId;
+	if (pExtDeviceId)
+		*pExtDeviceId = extDeviceId;
+
+	return true;
+}
+
+NVAPI_DLL bool GetGPUBusId(unsigned int index, unsigned long *pBusId)
+{
+	NvPhysicalGpuHandle gpuHandle = GetGPUHandle(index);
+	if (!gpuHandle)
+		return false;
+
+	NvU32 busId = 0;
+	NvAPI_Status status = NvAPI_GPU_GetBusId(gpuHandle, &busId);
+
+	if (status != NVAPI_OK)
+	{
+		GetNvApiErrorMessage(status);
+		return false;
+	}
+
+	if (pBusId)
+		*pBusId = busId;
+
+	return true;
+}
+
 NVAPI_DLL const char *GetIlluminationZonesInfo(unsigned int index, CustomIlluminationZonesInfo *pCustomIlluminationZonesInfo)
 {
 	if (!pCustomIlluminationZonesInfo)

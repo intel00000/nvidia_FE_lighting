@@ -82,6 +82,58 @@
                         </Border>
                     </Grid>
 
+                    <!-- Profiles -->
+                    <Border Style="{StaticResource CardBorderStyle}">
+                        <StackPanel Orientation="Vertical" Margin="4">
+                            <TextBlock Text="Lighting Profiles" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,10"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" Margin="4">
+                                    <TextBlock Text="Profile 1" FontSize="12" Margin="0,0,0,6" HorizontalAlignment="Center"/>
+                                    <Button x:Name="saveProfile1" Content="Save" Click="SaveProfile_Click" Tag="1" Margin="2"/>
+                                    <Button x:Name="loadProfile1" Content="Load" Click="LoadProfile_Click" Tag="1" Margin="2"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" Margin="4">
+                                    <TextBlock Text="Profile 2" FontSize="12" Margin="0,0,0,6" HorizontalAlignment="Center"/>
+                                    <Button x:Name="saveProfile2" Content="Save" Click="SaveProfile_Click" Tag="2" Margin="2"/>
+                                    <Button x:Name="loadProfile2" Content="Load" Click="LoadProfile_Click" Tag="2" Margin="2"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2" Margin="4">
+                                    <TextBlock Text="Profile 3" FontSize="12" Margin="0,0,0,6" HorizontalAlignment="Center"/>
+                                    <Button x:Name="saveProfile3" Content="Save" Click="SaveProfile_Click" Tag="3" Margin="2"/>
+                                    <Button x:Name="loadProfile3" Content="Load" Click="LoadProfile_Click" Tag="3" Margin="2"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="3" Margin="4">
+                                    <TextBlock Text="Profile 4" FontSize="12" Margin="0,0,0,6" HorizontalAlignment="Center"/>
+                                    <Button x:Name="saveProfile4" Content="Save" Click="SaveProfile_Click" Tag="4" Margin="2"/>
+                                    <Button x:Name="loadProfile4" Content="Load" Click="LoadProfile_Click" Tag="4" Margin="2"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="4" Margin="4">
+                                    <TextBlock Text="Profile 5" FontSize="12" Margin="0,0,0,6" HorizontalAlignment="Center"/>
+                                    <Button x:Name="saveProfile5" Content="Save" Click="SaveProfile_Click" Tag="5" Margin="2"/>
+                                    <Button x:Name="loadProfile5" Content="Load" Click="LoadProfile_Click" Tag="5" Margin="2"/>
+                                </StackPanel>
+                            </Grid>
+                            <CheckBox x:Name="applyOnStartupCheckBox"
+                                     Content="Apply current settings on startup"
+                                     Margin="4,10,4,4"
+                                     Foreground="{StaticResource TextPrimaryBrush}"
+                                     Checked="ApplyOnStartupCheckBox_Checked"
+                                     Unchecked="ApplyOnStartupCheckBox_Unchecked"/>
+                        </StackPanel>
+                    </Border>
+
                     <!-- Zones Panel -->
                     <Border Style="{StaticResource CardBorderStyle}">
                         <StackPanel Orientation="Vertical">
@@ -97,10 +149,7 @@
                             </ScrollViewer>
                             <Button x:Name="applyAllButton" Content="Apply All" IsEnabled="False" HorizontalAlignment="Right"
                                             Padding="12,6" Click="applyAllButton_Click"
-                                            Style="{StaticResource SecondaryButtonStyle}"
-                                            Background="{StaticResource AccentAltBrush}"
-                                            BorderBrush="{StaticResource AccentAltBrush}"
-                                            Foreground="{StaticResource TextPrimaryBrush}"/>
+                                            Style="{StaticResource SecondaryButtonStyle}"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>

@@ -89,6 +89,8 @@ NVAPI_DLL NvPhysicalGpuHandle GetGPUHandle(unsigned int index);
 NVAPI_DLL const char *GetGPUName(unsigned int index);
 NVAPI_DLL const char *GetGPUInfo(unsigned int index);
 NVAPI_DLL const char *GetSystemType(unsigned int index);
+NVAPI_DLL bool GetGPUPCIIdentifiers(unsigned int index, unsigned long *pDeviceId, unsigned long *pSubSystemId, unsigned long *pRevisionId, unsigned long *pExtDeviceId);
+NVAPI_DLL bool GetGPUBusId(unsigned int index, unsigned long *pBusId);
 NVAPI_DLL const char *GetIlluminationZonesInfo(unsigned int index, CustomIlluminationZonesInfo *pCustomIlluminationZonesInfo);
 NVAPI_DLL const char *GetIlluminationZonesControl(unsigned int index, bool Default, CustomIlluminationZoneControls *pCustomIlluminationZoneControls);
 NVAPI_DLL bool SetIlluminationZoneManualRGBW(unsigned int gpuIndex, unsigned int zoneIndex, uint8_t red, uint8_t green, uint8_t blue, uint8_t white, uint8_t brightness, bool Default);

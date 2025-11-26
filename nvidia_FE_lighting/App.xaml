@@ -234,24 +234,25 @@
                             <Ellipse x:Name="ellipse"
                                    Fill="{TemplateBinding Background}"
                                    Stroke="{TemplateBinding BorderBrush}"
-                                   StrokeThickness="2"/>
-                            <ToolTip x:Name="tooltip"
-                                   Placement="Top"
-                                   IsOpen="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}">
-                                <ToolTip.Template>
-                                    <ControlTemplate>
-                                        <Border Background="{StaticResource CardBackgroundBrush}"
-                                              BorderBrush="{StaticResource HoverBrush}"
-                                              BorderThickness="1"
-                                              CornerRadius="4"
-                                              Padding="8,4">
-                                            <TextBlock Text="{Binding Value, RelativeSource={RelativeSource AncestorType=Slider}, StringFormat='{}{0:F0}'}"
-                                                     Foreground="{StaticResource TextPrimaryBrush}"
-                                                     FontWeight="SemiBold"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </ToolTip.Template>
-                            </ToolTip>
+                                   StrokeThickness="2">
+                                <Ellipse.ToolTip>
+                                    <ToolTip Placement="Top">
+                                        <ToolTip.Template>
+                                            <ControlTemplate>
+                                                <Border Background="{StaticResource CardBackgroundBrush}"
+                                                      BorderBrush="{StaticResource HoverBrush}"
+                                                      BorderThickness="1"
+                                                      CornerRadius="4"
+                                                      Padding="8,4">
+                                                    <TextBlock Text="{Binding Value, RelativeSource={RelativeSource AncestorType=Slider}, StringFormat='{}{0:F0}'}"
+                                                             Foreground="{StaticResource TextPrimaryBrush}"
+                                                             FontWeight="SemiBold"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </ToolTip.Template>
+                                    </ToolTip>
+                                </Ellipse.ToolTip>
+                            </Ellipse>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">

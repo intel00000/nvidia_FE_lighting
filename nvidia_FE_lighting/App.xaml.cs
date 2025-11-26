@@ -119,21 +119,12 @@ namespace nvidia_FE_lighting
 
                 File.AppendAllText(logPath, "GPU verification successful. Detecting zones...\n");
 
+                // Detect zones first (critical step that UI does before applying settings)
                 var zoneInfo = new CustomIlluminationZonesInfo { zones = new CustomIlluminationZonesInfoData[32] };
-                if (!GetIlluminationZonesInfo(gpuIndex, ref zoneInfo))
-                {
-                    File.AppendAllText(logPath, "Failed to get illumination zones info. Exiting.\n");
-                    DeinitializeNvApi();
-                    return;
-                }
+                GetIlluminationZonesInfo(gpuIndex, ref zoneInfo);
 
                 var zoneControls = new CustomIlluminationZoneControls { zones = new CustomIlluminationZoneControl[32] };
-                if (!GetIlluminationZonesControl(gpuIndex, false, ref zoneControls))
-                {
-                    File.AppendAllText(logPath, "Failed to get illumination zones control. Exiting.\n");
-                    DeinitializeNvApi();
-                    return;
-                }
+                GetIlluminationZonesControl(gpuIndex, false, ref zoneControls);
 
                 if (zoneInfo.numIllumZones == 0)
                 {

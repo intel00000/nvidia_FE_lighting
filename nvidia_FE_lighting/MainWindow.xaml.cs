@@ -434,7 +434,10 @@ namespace nvidia_FE_lighting
                 var (gpuIdx, zoneIdx) = kvp.Key;
                 byte brightness = kvp.Value;
                 string zoneType = globalZoneControls[zoneIdx].zoneType;
-                ApplyBrightnessForZone(gpuIdx, zoneIdx, zoneType, brightness);
+                if (ApplyBrightnessForZone(gpuIdx, zoneIdx, zoneType, brightness))
+                {
+                    Thread.Sleep(100);
+                }
             }
 
             pendingBrightnessChanges.Clear();
@@ -630,7 +633,7 @@ namespace nvidia_FE_lighting
                                 globalZoneControls[zoneProfile.ZoneIndex].manualColorData.rgbw.brightness = zoneProfile.Brightness;
                             }
                         }
-                        else
+                        else if (zoneProfile.ZoneType == "Single Color")
                         {
                             success = SetIlluminationZoneManualSingleColor(currentGpuIndex, (uint)zoneProfile.ZoneIndex,
                                 zoneProfile.Brightness, false);
@@ -638,6 +641,43 @@ namespace nvidia_FE_lighting
                             {
                                 globalZoneControls[zoneProfile.ZoneIndex].manualColorData.singleColor.brightness = zoneProfile.Brightness;
                             }
+                            if (!success)
+                            {
+                                success = SetIlluminationZoneManualColorFixed(currentGpuIndex, (uint)zoneProfile.ZoneIndex,
+                                    zoneProfile.Brightness, false);
+                                if (success)
+                                {
+                                    globalZoneControls[zoneProfile.ZoneIndex].manualColorData.singleColor.brightness = zoneProfile.Brightness;
+                                }
+                            }
+                        }
+                        else if (zoneProfile.ZoneType == "Color Fixed")
+                        {
+                            success = SetIlluminationZoneManualColorFixed(currentGpuIndex, (uint)zoneProfile.ZoneIndex,
+                                zoneProfile.Brightness, false);
+                            if (success)
+                            {
+                                globalZoneControls[zoneProfile.ZoneIndex].manualColorData.singleColor.brightness = zoneProfile.Brightness;
+                            }
+                        }
+                        else
+                        {
+                            // Unknown zone type, try both
+                            success = SetIlluminationZoneManualSingleColor(currentGpuIndex, (uint)zoneProfile.ZoneIndex,
+                                zoneProfile.Brightness, false);
+                            if (!success)
+                            {
+                                success = SetIlluminationZoneManualColorFixed(currentGpuIndex, (uint)zoneProfile.ZoneIndex,
+                                    zoneProfile.Brightness, false);
+                            }
+                            if (success)
+                            {
+                                globalZoneControls[zoneProfile.ZoneIndex].manualColorData.singleColor.brightness = zoneProfile.Brightness;
+                            }
+                        }
+                        if (success)
+                        {
+                            Thread.Sleep(100);
                         }
                     }
 

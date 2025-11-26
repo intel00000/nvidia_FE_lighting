@@ -190,16 +190,16 @@ namespace nvidia_FE_lighting
                     if (success)
                     {
                         successCount++;
-                        // Small delay between zone commands to allow hardware to process
-                        Thread.Sleep(100);
+                        // Small delay between zone commands
+                        Thread.Sleep(200);
                     }
                 }
 
                 File.AppendAllText(logPath, $"Applied settings to {successCount}/{settings.Zones.Count} zones successfully.\n");
 
-                // Wait briefly to allow hardware to process commands before exit
-                File.AppendAllText(logPath, "Waiting 2 seconds for hardware to process...\n");
-                Thread.Sleep(2000);
+                // Wait before exit
+                File.AppendAllText(logPath, "Waiting 1 second for hardware to process...\n");
+                Thread.Sleep(1000);
 
                 // Cleanup
                 DeinitializeNvApi();

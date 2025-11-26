@@ -34,8 +34,11 @@ Controlling RGB/RGBW illumination zones on NVIDIA graphics cards, primarily for 
 **Build Steps for Single-File Executable:**
 
 ```bash
-git clone https://github.com/intel00000/nvidia_FE_lighting.git
+git clone --recurse-submodules https://github.com/intel00000/nvidia_FE_lighting.git
 cd nvidia_FE_lighting
+
+# If you already cloned without --recurse-submodules, run:
+# git submodule update --init --recursive
 
 # Build the C++ wrapper
 msbuild nvidia_FE_lighting.sln /p:Configuration=Release /p:Platform=x64 /t:NvApiWrapper

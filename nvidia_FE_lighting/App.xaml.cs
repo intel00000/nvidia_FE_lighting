@@ -31,9 +31,8 @@ namespace nvidia_FE_lighting
 
             try
             {
-                // Initialize logging
                 Directory.CreateDirectory(Path.GetDirectoryName(logPath));
-                File.AppendAllText(logPath, $"\n[{DateTime.Now}] Startup mode initiated\n");
+                File.WriteAllText(logPath, $"[{DateTime.Now}] Startup mode initiated\n");
 
                 // Wait for driver initialization
                 string settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -188,10 +187,19 @@ namespace nvidia_FE_lighting
                         }
                     }
 
-                    if (success) successCount++;
+                    if (success)
+                    {
+                        successCount++;
+                        // Small delay between zone commands to allow hardware to process
+                        Thread.Sleep(100);
+                    }
                 }
 
                 File.AppendAllText(logPath, $"Applied settings to {successCount}/{settings.Zones.Count} zones successfully.\n");
+
+                // Wait briefly to allow hardware to process commands before exit
+                File.AppendAllText(logPath, "Waiting 2 seconds for hardware to process...\n");
+                Thread.Sleep(2000);
 
                 // Cleanup
                 DeinitializeNvApi();

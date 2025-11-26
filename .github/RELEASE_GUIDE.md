@@ -29,10 +29,12 @@ This repository uses GitHub Actions to automatically build and publish releases.
 
 The release ZIP includes:
 
-- `nvidia_FE_lighting.exe` - standalone executable
+- `nvidia_FE_lighting.exe` - framework-dependent single-file executable
 - `README.txt` - User instructions
 
-**Note:** The native C++ DLL (NvApiDll.dll) is embedded in the .exe and automatically extracted to a temporary folder.
+**Note:**
+
+- Requires .NET 8.0.x Runtime to be installed on the target system
 
 ## Local Build
 
@@ -43,7 +45,7 @@ To build locally:
 msbuild nvidia_FE_lighting.sln /p:Configuration=Release /p:Platform=x64 /t:NvApiWrapper
 
 # Publish as single-file executable
-dotnet publish nvidia_FE_lighting\nvidia_FE_lighting.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
+dotnet publish nvidia_FE_lighting\nvidia_FE_lighting.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
 ```
 
 Output will be a single `nvidia_FE_lighting.exe` in the `publish\` folder.

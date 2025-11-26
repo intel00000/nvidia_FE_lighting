@@ -13,8 +13,8 @@ Controlling RGB/RGBW illumination zones on NVIDIA graphics cards, primarily for 
 ## Requirements
 
 - Windows 10/11 (64-bit)
+- .NET 8.0.x Runtime ([Download here](https://dotnet.microsoft.com/download/dotnet/8.0))
 - NVIDIA drivers installed
-- No .NET runtime installation needed
 
 ## Installation
 
@@ -41,7 +41,7 @@ cd nvidia_FE_lighting
 msbuild nvidia_FE_lighting.sln /p:Configuration=Release /p:Platform=x64 /t:NvApiWrapper
 
 # Publish as single-file executable
-dotnet publish nvidia_FE_lighting\nvidia_FE_lighting.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish
+dotnet publish nvidia_FE_lighting\nvidia_FE_lighting.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o publish
 ```
 
 Output will be a single `nvidia_FE_lighting.exe` in the `publish\` folder.

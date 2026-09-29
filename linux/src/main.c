@@ -11,6 +11,8 @@
  * Linux and could change between driver releases. OpenRGB has used the same path since 2024.
  *
  * Subcommands:
+ *   list [--json]                                   all GPUs and their zones
+ *   get --gpu N [--default] [--json]                zones of one GPU
  *   version
  *
  * Exit codes: 0 ok, 1 usage, 2 library/driver unavailable, 3 NvAPI error,
@@ -32,6 +34,8 @@ typedef struct
 } command_t;
 
 static const command_t commands[] = {
+    {"list", cmd_list, "  list [--json]                                   all GPUs and their zones\n"},
+    {"get", cmd_get, "  get --gpu N [--default] [--json]                zones of one GPU (--default: stored defaults)\n"},
     {"version", cmd_version, "  version\n"},
 };
 

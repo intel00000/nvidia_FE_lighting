@@ -1,4 +1,4 @@
-/* model.c - NvAPI illumination enum values mapping. */
+/* model.c - NvAPI illumination enum values mapping and zone control data decoding. */
 #include "model.h"
 
 #include <string.h>
@@ -140,4 +140,92 @@ int zone_has_color(NV_GPU_CLIENT_ILLUM_ZONE_TYPE t)
 int zone_has_white(NV_GPU_CLIENT_ILLUM_ZONE_TYPE t)
 {
     return t == NV_GPU_CLIENT_ILLUM_ZONE_TYPE_RGBW;
+}
+
+/* Read the manual parameters (and piecewise data, if any) of one zone into the model. */
+void zone_read_control(zone_t *z, const NV_GPU_CLIENT_ILLUM_ZONE_CONTROL_V1 *c)
+{
+    z->present_in_control = 1;
+    z->ctrl_mode = c->ctrlMode;
+    z->piecewise = (c->ctrlMode == NV_GPU_CLIENT_ILLUM_CTRL_MODE_PIECEWISE_LINEAR);
+    if (!z->present_in_info)
+        z->type = c->type;
+    const NV_GPU_CLIENT_ILLUM_ZONE_CONTROL_DATA_PIECEWISE_LINEAR *pw = NULL;
+    switch (c->type)
+    {
+    case NV_GPU_CLIENT_ILLUM_ZONE_TYPE_RGB:
+        if (!z->piecewise)
+        {
+            const NV_GPU_CLIENT_ILLUM_ZONE_CONTROL_DATA_MANUAL_RGB_PARAMS *p = &c->data.rgb.data.manualRGB.rgbParams;
+            z->r = p->colorR;
+            z->g = p->colorG;
+            z->b = p->colorB;
+            z->brightness = p->brightnessPct;
+        }
+        else
+        {
+            for (int j = 0; j < 2; j++)
+            {
+                const NV_GPU_CLIENT_ILLUM_ZONE_CONTROL_DATA_MANUAL_RGB_PARAMS *p = &c->data.rgb.data.piecewiseLinearRGB.rgbParams[j];
+                z->ep_r[j] = p->colorR;
+                z->ep_g[j] = p->colorG;
+                z->ep_b[j] = p->colorB;
+                z->ep_brightness[j] = p->brightnessPct;
+            }
+            pw = &c->data.rgb.data.piecewiseLinearRGB.piecewiseLinearData;
+        }
+        break;
+    case NV_GPU_CLIENT_ILLUM_ZONE_TYPE_RGBW:
+        if (!z->piecewise)
+        {
+            const NV_GPU_CLIENT_ILLUM_ZONE_CONTROL_DATA_MANUAL_RGBW_PARAMS *p = &c->data.rgbw.data.manualRGBW.rgbwParams;
+            z->r = p->colorR;
+            z->g = p->colorG;
+            z->b = p->colorB;
+            z->w = p->colorW;
+            z->brightness = p->brightnessPct;
+        }
+        else
+        {
+            for (int j = 0; j < 2; j++)
+            {
+                const NV_GPU_CLIENT_ILLUM_ZONE_CONTROL_DATA_MANUAL_RGBW_PARAMS *p = &c->data.rgbw.data.piecewiseLinearRGBW.rgbwParams[j];
+                z->ep_r[j] = p->colorR;
+                z->ep_g[j] = p->colorG;
+                z->ep_b[j] = p->colorB;
+                z->ep_w[j] = p->colorW;
+                z->ep_brightness[j] = p->brightnessPct;
+            }
+            pw = &c->data.rgbw.data.piecewiseLinearRGBW.piecewiseLinearData;
+        }
+        break;
+    case NV_GPU_CLIENT_ILLUM_ZONE_TYPE_COLOR_FIXED:
+        if (!z->piecewise)
+        {
+            z->brightness = c->data.colorFixed.data.manualColorFixed.colorFixedParams.brightnessPct;
+        }
+        else
+        {
+            for (int j = 0; j < 2; j++)
+                z->ep_brightness[j] = c->data.colorFixed.data.piecewiseLinearColorFixed.colorFixedParams[j].brightnessPct;
+            pw = &c->data.colorFixed.data.piecewiseLinearColorFixed.piecewiseLinearData;
+        }
+        break;
+    case NV_GPU_CLIENT_ILLUM_ZONE_TYPE_SINGLE_COLOR:
+        if (!z->piecewise)
+        {
+            z->brightness = c->data.singleColor.data.manualSingleColor.singleColorParams.brightnessPct;
+        }
+        else
+        {
+            for (int j = 0; j < 2; j++)
+                z->ep_brightness[j] = c->data.singleColor.data.piecewiseLinearSingleColor.singleColorParams[j].brightnessPct;
+            pw = &c->data.singleColor.data.piecewiseLinearSingleColor.piecewiseLinearData;
+        }
+        break;
+    default:
+        break;
+    }
+    if (pw)
+        z->pw = *pw;
 }

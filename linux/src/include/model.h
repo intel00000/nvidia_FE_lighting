@@ -43,5 +43,6 @@ const char *ctrl_mode_key(NV_GPU_CLIENT_ILLUM_CTRL_MODE m);
 const char *cycle_key(NV_GPU_CLIENT_ILLUM_PIECEWISE_LINEAR_CYCLE_TYPE c);
 int zone_has_color(NV_GPU_CLIENT_ILLUM_ZONE_TYPE t);
 int zone_has_white(NV_GPU_CLIENT_ILLUM_ZONE_TYPE t);
+void zone_read_control(zone_t *z, const NV_GPU_CLIENT_ILLUM_ZONE_CONTROL_V1 *c);
 
 #endif

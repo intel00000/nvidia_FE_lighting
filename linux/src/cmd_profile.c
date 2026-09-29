@@ -1,10 +1,12 @@
-/* cmd_profile.c - the save command. */
+/* cmd_profile.c - the save and apply commands. */
+#include "apply.h"
 #include "commands.h"
 #include "device.h"
 #include "diag.h"
 #include "parse.h"
 #include "profile.h"
 
+#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -53,4 +55,51 @@ int cmd_save(int argc, char **argv)
         return rc;
     printf("saved %u zone(s) of GPU %u to %s\n", n, (NvU32)gpu, path);
     return 0;
+}
+
+__attribute__((format(printf, 1, 2))) static void say_plain(const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    vfprintf(stdout, fmt, ap);
+    va_end(ap);
+}
+
+int cmd_apply(int argc, char **argv)
+{
+    long gpu = -1;
+    int verify_gpu = 1;
+    const char *path = NULL;
+    for (int i = 0; i < argc; i++)
+    {
+        if (strcmp(argv[i], "--gpu") == 0)
+        {
+            if (!parse_opt("--gpu", argv[++i], 0, MAX_GPU_INDEX, &gpu))
+                return EXIT_USAGE;
+        }
+        else if (strcmp(argv[i], "--no-verify-gpu") == 0)
+            verify_gpu = 0;
+        else if (argv[i][0] == '-')
+        {
+            log_err("felight apply: unknown option %s\n", argv[i]);
+            return EXIT_USAGE;
+        }
+        else
+            path = argv[i];
+    }
+    if (!path)
+    {
+        log_err("felight apply: usage: apply [--gpu N] [--no-verify-gpu] FILE\n");
+        return EXIT_USAGE;
+    }
+    profile_t p;
+    int rc = profile_load(path, &p);
+    if (rc)
+        return rc;
+    if (p.nzones == 0)
+    {
+        log_err("felight apply: %s contains no zone lines\n", path);
+        return EXIT_FILE;
+    }
+    return apply_profile(&p, gpu, verify_gpu, say_plain);
 }

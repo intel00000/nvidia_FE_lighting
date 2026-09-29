@@ -16,6 +16,7 @@
  *   set --gpu N --zone Z [--rgb R,G,B | --color #RRGGBB] [--white W] [--brightness B]
  *                        [--no-verify] [--default]
  *   save --gpu N [--delay S] FILE                   write the current zone state as a profile
+ *   apply [--gpu N] [--no-verify-gpu] FILE          apply a profile now
  *   version
  *
  * Exit codes: 0 ok, 1 usage, 2 library/driver unavailable, 3 NvAPI error,
@@ -44,6 +45,7 @@ static const command_t commands[] = {
      "                       [--no-verify] [--default]  write one zone (manual mode; --default writes\n"
      "                                                  the card's stored defaults instead of the active set)\n"},
     {"save", cmd_save, "  save --gpu N [--delay S] FILE                   write the current state as a profile file\n"},
+    {"apply", cmd_apply, "  apply [--gpu N] [--no-verify-gpu] FILE          apply a profile file now\n"},
     {"version", cmd_version, "  version\n"},
 };
 

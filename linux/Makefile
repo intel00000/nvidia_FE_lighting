@@ -20,7 +20,9 @@ SRCS := src/main.c \
         src/nvapi_loader.c \
         src/cmd_version.c \
         src/model.c \
-        src/device.c
+        src/device.c \
+        src/parse.c \
+        src/output.c
 HDRS := $(wildcard src/include/*.h)
 
 .PHONY: all clean check-headers

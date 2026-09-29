@@ -13,6 +13,8 @@ typedef struct
     char name[NVAPI_SHORT_STRING_MAX];
     int has_ids;
     NvU32 bus_id, device_id, subsystem_id, revision_id, ext_device_id;
+    int has_uuid;
+    char uuid[41]; /* "GPU-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" */
     int has_info;
     NvU32 rt_cores, tensor_cores;
     int external;

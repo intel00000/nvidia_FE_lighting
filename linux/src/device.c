@@ -51,6 +51,20 @@ int read_gpu(nvapi_t *nv, NvU32 index, gpu_t *g)
             g->external = info.bIsExternalGpu ? 1 : 0;
         }
     }
+    if (nv->GPU_GetUUID)
+    {
+        static const NvU8 none[NVAPI_UUID_LEN];
+        NV_GPU_UUID id;
+        memset(&id, 0, sizeof id);
+        id.version = NV_GPU_UUID_VER;
+        const NvU8 *u = id.uuid;
+        if (nv->GPU_GetUUID(h, &id) == NVAPI_OK && memcmp(u, none, sizeof none) != 0)
+        {
+            snprintf(g->uuid, sizeof g->uuid, "GPU-%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+                     u[0], u[1], u[2], u[3], u[4], u[5], u[6], u[7], u[8], u[9], u[10], u[11], u[12], u[13], u[14], u[15]);
+            g->has_uuid = 1;
+        }
+    }
     return 0;
 }
 

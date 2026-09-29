@@ -92,6 +92,7 @@ int nv_open(nvapi_t *nv)
     RESOLVE(GPU_GetPCIIdentifiers, "NvAPI_GPU_GetPCIIdentifiers");
     RESOLVE(GPU_GetBusId, "NvAPI_GPU_GetBusId");
     RESOLVE(GPU_GetGPUInfo, "NvAPI_GPU_GetGPUInfo");
+    RESOLVE(GPU_GetUUID, "NvAPI_GPU_GetUUID");
     RESOLVE(IllumDevicesGetInfo, "NvAPI_GPU_ClientIllumDevicesGetInfo");
     RESOLVE(IllumZonesGetInfo, "NvAPI_GPU_ClientIllumZonesGetInfo");
     RESOLVE(IllumZonesGetControl, "NvAPI_GPU_ClientIllumZonesGetControl");

@@ -19,6 +19,7 @@ typedef struct
     NvAPI_Status (*GPU_GetPCIIdentifiers)(NvPhysicalGpuHandle, NvU32 *, NvU32 *, NvU32 *, NvU32 *);
     NvAPI_Status (*GPU_GetBusId)(NvPhysicalGpuHandle, NvU32 *);
     NvAPI_Status (*GPU_GetGPUInfo)(NvPhysicalGpuHandle, NV_GPU_INFO *);
+    NvAPI_Status (*GPU_GetUUID)(NvPhysicalGpuHandle, NV_GPU_UUID *);
     NvAPI_Status (*IllumDevicesGetInfo)(NvPhysicalGpuHandle, NV_GPU_CLIENT_ILLUM_DEVICE_INFO_PARAMS *);
     NvAPI_Status (*IllumZonesGetInfo)(NvPhysicalGpuHandle, NV_GPU_CLIENT_ILLUM_ZONE_INFO_PARAMS *);
     NvAPI_Status (*IllumZonesGetControl)(NvPhysicalGpuHandle, NV_GPU_CLIENT_ILLUM_ZONE_CONTROL_PARAMS *);

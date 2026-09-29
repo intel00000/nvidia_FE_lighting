@@ -24,7 +24,9 @@ SRCS := src/main.c \
         src/parse.c \
         src/output.c \
         src/cmd_query.c \
-        src/cmd_set.c
+        src/cmd_set.c \
+        src/profile.c \
+        src/cmd_profile.c
 HDRS := $(wildcard src/include/*.h)
 
 .PHONY: all clean check-headers

@@ -73,6 +73,11 @@ void print_gpu_json(FILE *f, const gpu_t *g, const zone_t *zones, NvU32 nzones, 
     if (g->has_ids)
         fprintf(f, ",\"bus_id\":%u,\"device_id\":\"0x%08x\",\"subsystem_id\":\"0x%08x\",\"revision_id\":\"0x%x\",\"ext_device_id\":\"0x%08x\"",
                 g->bus_id, g->device_id, g->subsystem_id, g->revision_id, g->ext_device_id);
+    if (g->has_uuid)
+    {
+        fprintf(f, ",\"uuid\":");
+        json_string(f, g->uuid);
+    }
     if (g->has_info)
         fprintf(f, ",\"rt_cores\":%u,\"tensor_cores\":%u,\"external\":%s", g->rt_cores, g->tensor_cores, g->external ? "true" : "false");
 
@@ -93,6 +98,8 @@ void print_gpu_text(FILE *f, const gpu_t *g, const zone_t *zones, NvU32 nzones)
 
     if (g->has_ids)
         fprintf(f, "  (bus %u, device 0x%08x, subsystem 0x%08x)", g->bus_id, g->device_id, g->subsystem_id);
+    if (g->has_uuid)
+        fprintf(f, "  %s", g->uuid);
 
     fputc('\n', f);
 

@@ -13,6 +13,8 @@
  * Subcommands:
  *   list [--json]                                   all GPUs and their zones
  *   get --gpu N [--default] [--json]                zones of one GPU
+ *   set --gpu N --zone Z [--rgb R,G,B | --color #RRGGBB] [--white W] [--brightness B]
+ *                        [--no-verify] [--default]
  *   version
  *
  * Exit codes: 0 ok, 1 usage, 2 library/driver unavailable, 3 NvAPI error,
@@ -36,6 +38,10 @@ typedef struct
 static const command_t commands[] = {
     {"list", cmd_list, "  list [--json]                                   all GPUs and their zones\n"},
     {"get", cmd_get, "  get --gpu N [--default] [--json]                zones of one GPU (--default: stored defaults)\n"},
+    {"set", cmd_set,
+     "  set --gpu N --zone Z [--rgb R,G,B | --color #RRGGBB] [--white W] [--brightness B]\n"
+     "                       [--no-verify] [--default]  write one zone (manual mode; --default writes\n"
+     "                                                  the card's stored defaults instead of the active set)\n"},
     {"version", cmd_version, "  version\n"},
 };
 

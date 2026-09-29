@@ -23,7 +23,8 @@ SRCS := src/main.c \
         src/device.c \
         src/parse.c \
         src/output.c \
-        src/cmd_query.c
+        src/cmd_query.c \
+        src/cmd_set.c
 HDRS := $(wildcard src/include/*.h)
 
 .PHONY: all clean check-headers

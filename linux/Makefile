@@ -12,14 +12,15 @@ NVAPI_DIR    := $(patsubst %/nvapi.h,%,$(NVAPI_HEADER))
 
 CC       ?= gcc
 CFLAGS   ?= -O2 -g -Wall -Wextra
-CPPFLAGS += -D_GNU_SOURCE -isystem $(NVAPI_DIR) -Isrc
+CPPFLAGS += -D_GNU_SOURCE -isystem $(NVAPI_DIR) -Isrc/include
 LDLIBS   += -ldl
 
 SRCS := src/main.c \
         src/diag.c \
         src/nvapi_loader.c \
-        src/cmd_version.c
-HDRS := $(wildcard src/*.h)
+        src/cmd_version.c \
+        src/model.c
+HDRS := $(wildcard src/include/*.h)
 
 .PHONY: all clean check-headers
 

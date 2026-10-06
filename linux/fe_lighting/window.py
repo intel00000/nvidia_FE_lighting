@@ -1,8 +1,10 @@
-"""The main window: GPU selection and information, zone cards, status bar."""
+"""The main window: GPU selection and information, profiles, zone cards, status bar."""
+
+import os
 
 from gi.repository import Adw, GLib, Gtk
 
-from .config import APP_NAME
+from .config import APP_NAME, PROFILE_SLOTS, PROFILES_DIR, profile_path
 from .felight_cli import FelightError
 from .sliders import SliderWriter
 from .widgets import bytes_from_rgba, make_card, make_label
@@ -27,6 +29,7 @@ class MainWindow(Adw.ApplicationWindow):
 
         root = self._build_header()
         self._build_gpu_section(root)
+        self._build_profiles_section(root)
         self._build_zones_section(root)
         self._build_status_bar(root)
 
@@ -107,6 +110,31 @@ class MainWindow(Adw.ApplicationWindow):
             widget.set_selectable(True)
             info_card.append(widget)
         top.append(info_card)
+
+    def _build_profiles_section(self, root):
+        profiles_card = make_card()
+        profiles_card.append(
+            make_label("Lighting Profiles", "fe-heading", margin_bottom=4)
+        )
+        grid = Gtk.Box(
+            orientation=Gtk.Orientation.HORIZONTAL, homogeneous=True, spacing=4
+        )
+        for slot in range(1, PROFILE_SLOTS + 1):
+            column = Gtk.Box(
+                orientation=Gtk.Orientation.VERTICAL, spacing=6, halign=Gtk.Align.CENTER
+            )
+            column.append(Gtk.Label(label=f"Profile {slot}", halign=Gtk.Align.CENTER))
+            buttons = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+            save = Gtk.Button(label="Save")
+            save.connect("clicked", self.on_save_profile, slot)
+            load = Gtk.Button(label="Load")
+            load.connect("clicked", self.on_load_profile, slot)
+            buttons.append(save)
+            buttons.append(load)
+            column.append(buttons)
+            grid.append(column)
+        profiles_card.append(grid)
+        root.append(profiles_card)
 
     def _build_zones_section(self, root):
         zones_card = make_card()
@@ -348,3 +376,37 @@ class MainWindow(Adw.ApplicationWindow):
         else:
             for index in written:
                 self.refresh_zone_labels(index)
+
+    def on_save_profile(self, _button, slot):
+        if not self.zones:
+            self.alert("No zones detected", "Please detect zones first.")
+            return
+        try:
+            os.makedirs(PROFILES_DIR, exist_ok=True)
+            self.felight.save(self.current_gpu, profile_path(slot))
+        except (OSError, FelightError) as exc:
+            self.alert("Failed to save profile", getattr(exc, "message", str(exc)))
+            return
+        self.set_status(f"Saved profile {slot}")
+        self.toast(f"Profile {slot} saved successfully!")
+
+    def on_load_profile(self, _button, slot):
+        path = profile_path(slot)
+        if not os.path.exists(path):
+            self.alert(f"Profile {slot} does not exist.", path)
+            return
+        if not self.gpus:
+            self.alert("No GPU", "No GPU is selected.")
+            return
+        try:
+            code, output = self.felight.apply(self.current_gpu, path)
+        except FelightError as exc:
+            self.alert("Failed to load profile", exc.message)
+            return
+        self.populate_zones(self.current_gpu)
+        if code == 6:
+            self.set_status(f"Profile {slot} partially applied.")
+            self.alert(f"Profile {slot} was only partially applied", output.strip())
+        else:
+            self.set_status(f"Loaded profile {slot}")
+            self.toast(f"Profile {slot} loaded successfully!")

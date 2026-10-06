@@ -82,8 +82,43 @@ jobs:
           path: FELighting-${{ github.ref_name }}.zip
           if-no-files-found: error
 
+  build-linux:
+    runs-on: ubuntu-latest
+    container: ubuntu:22.04
+
+    steps:
+      - name: Install build tools
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends gcc libc6-dev make git ca-certificates binutils
+
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          submodules: "recursive"
+
+      - name: Build felight
+        run: |
+          make -C linux
+          readelf -d linux/felight | grep NEEDED
+          linux/felight version
+
+      - name: Package Linux files
+        run: |
+          mkdir -p release-package/nvidia-fe-lighting
+          cp linux/felight linux/fe_lighting_gui.py linux/fe-lighting-startup.sh linux/README.md release-package/nvidia-fe-lighting/
+          cp -r linux/fe_lighting release-package/nvidia-fe-lighting/
+          tar -C release-package -czf "FELighting-linux-x86_64-${{ github.ref_name }}.tar.gz" nvidia-fe-lighting
+
+      - name: Upload Linux package
+        uses: actions/upload-artifact@v7
+        with:
+          name: linux-package
+          path: FELighting-linux-x86_64-${{ github.ref_name }}.tar.gz
+          if-no-files-found: error
+
   release:
-    needs: build-windows
+    needs: [build-windows, build-linux]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
@@ -101,19 +136,17 @@ jobs:
         with:
           files: |
             dist/FELighting-${{ github.ref_name }}.zip
+            dist/FELighting-linux-x86_64-${{ github.ref_name }}.tar.gz
           body: |
             ## NVIDIA FE Lighting Control - ${{ github.ref_name }}
 
-            Download, extract, and run. Everything is bundled into one .exe file.
+            **Windows:** download `FELighting-${{ github.ref_name }}.zip`, extract, and run `nvidia_FE_lighting.exe`.
+            - Windows 10/11 (64-bit), .NET 8.0.x Runtime ([Download here](https://dotnet.microsoft.com/download/dotnet/8.0)), NVIDIA drivers installed
 
-            **Requirements:**
-            - Windows 10/11 (64-bit)
-            - .NET 8.0.x Runtime ([Download here](https://dotnet.microsoft.com/download/dotnet/8.0))
-            - NVIDIA drivers installed
-
-            **What's included:**
-            - nvidia_FE_lighting.exe - Standalone executable with everything bundled
-            - README.txt - Quick start guide
+            **Linux:** download `FELighting-linux-x86_64-${{ github.ref_name }}.tar.gz`, extract, and run `fe_lighting_gui.py` (GUI) or `felight` (command line).
+            - x86_64, glibc 2.35 or newer (Ubuntu 22.04+), NVIDIA driver 525 or newer
+            - GUI needs Python 3 with PyGObject, GTK 4 and libadwaita (installed by default on GNOME desktops)
+            - See `README.md` inside the archive to apply your settings at boot (`felight service enable`) or at login (GUI)
 
             **Changes in this release:**
             - See commit history for details

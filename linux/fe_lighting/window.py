@@ -1,10 +1,11 @@
-"""The main window: GPU selection and information, status bar."""
+"""The main window: GPU selection and information, zone cards, status bar."""
 
 from gi.repository import Adw, Gtk
 
 from .config import APP_NAME
 from .felight_cli import FelightError
 from .widgets import make_card, make_label
+from .zone_card import ZoneCard
 
 
 class MainWindow(Adw.ApplicationWindow):
@@ -18,10 +19,13 @@ class MainWindow(Adw.ApplicationWindow):
 
         self.gpus = []  # from `felight list --json`
         self.current_gpu = 0
+        self.zones = []  # cache of the last `felight get --json`
+        self.zone_cards = {}  # zone index -> ZoneCard
         self.initializing = True
 
         root = self._build_header()
         self._build_gpu_section(root)
+        self._build_zones_section(root)
         self._build_status_bar(root)
 
         self.populate_gpus()
@@ -74,6 +78,9 @@ class MainWindow(Adw.ApplicationWindow):
         self.gpu_dropdown.set_valign(Gtk.Align.CENTER)
         self.gpu_dropdown.connect("notify::selected", self.on_gpu_selected)
         select_row.append(self.gpu_dropdown)
+        detect = Gtk.Button(label="Detect Zones", valign=Gtk.Align.CENTER)
+        detect.connect("clicked", self.on_detect_clicked)
+        select_row.append(detect)
         select_card.append(select_row)
         top.append(select_card)
 
@@ -98,6 +105,15 @@ class MainWindow(Adw.ApplicationWindow):
             widget.set_selectable(True)
             info_card.append(widget)
         top.append(info_card)
+
+    def _build_zones_section(self, root):
+        zones_card = make_card()
+        zones_card.append(make_label("Illumination Zones", "fe-heading"))
+        self.zones_box = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL, spacing=12, margin_top=6
+        )
+        zones_card.append(self.zones_box)
+        root.append(zones_card)
 
     def _build_status_bar(self, root):
         status = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
@@ -173,3 +189,41 @@ class MainWindow(Adw.ApplicationWindow):
             self.set_status("No GPU selected.")
             return
         self.refresh_gpu_info(index)
+        self.clear_zones()
+
+    def clear_zones(self):
+        child = self.zones_box.get_first_child()
+        while child is not None:
+            nxt = child.get_next_sibling()
+            self.zones_box.remove(child)
+            child = nxt
+        self.zones = []
+        self.zone_cards = {}
+
+    def on_detect_clicked(self, _button):
+        if not self.gpus:
+            self.set_status("Select a GPU to detect zones.")
+            return
+        self.set_status(f"Detecting zones on GPU {self.current_gpu}...")
+        self.populate_zones(self.current_gpu)
+
+    def populate_zones(self, gpu_index):
+        self.clear_zones()
+        try:
+            data = self.felight.get(gpu_index)
+        except FelightError as exc:
+            self.set_status("Failed to read illumination zones.")
+            self.alert("Failed to read illumination zones", exc.message)
+            return
+        self.zones = data.zones
+        if not self.zones:
+            self.zones_box.append(
+                make_label("No illumination zones found.", margin_start=35)
+            )
+            self.set_status("No illumination zones found.")
+            return
+        for zone in self.zones:
+            card = ZoneCard(zone, gpu_index, self)
+            self.zone_cards[zone.index] = card
+            self.zones_box.append(card)
+        self.set_status(f"Found {len(self.zones)} illumination zone(s).")

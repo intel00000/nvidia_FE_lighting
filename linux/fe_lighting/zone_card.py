@@ -79,6 +79,7 @@ class ZoneCard(Gtk.Box):
             dialog = Gtk.ColorDialog(with_alpha=False, title=f"Zone {idx} color")
             picker = Gtk.ColorDialogButton(dialog=dialog, valign=Gtk.Align.CENTER)
             picker.set_rgba(rgba_from_bytes(zone.r, zone.g, zone.b))
+            picker.connect("notify::rgba", window.on_color_changed, gpu_index, idx)
             row.append(picker)
             self.color = picker
             if zone.has_white:
@@ -96,3 +97,9 @@ class ZoneCard(Gtk.Box):
         row.append(brightness)
         self.brightness = brightness
         self.append(row)
+
+    def refresh_labels(self, zone):
+        if self.header is not None:
+            self.header.set_text(zone_header_text(zone))
+        if self.active is not None:
+            self.active.set_text(zone_active_text(zone))

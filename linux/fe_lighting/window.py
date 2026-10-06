@@ -1,10 +1,10 @@
 """The main window: GPU selection and information, zone cards, status bar."""
 
-from gi.repository import Adw, Gtk
+from gi.repository import Adw, GLib, Gtk
 
 from .config import APP_NAME
 from .felight_cli import FelightError
-from .widgets import make_card, make_label
+from .widgets import bytes_from_rgba, make_card, make_label
 from .zone_card import ZoneCard
 
 
@@ -137,6 +137,12 @@ class MainWindow(Adw.ApplicationWindow):
         dialog.set_default_response("ok")
         dialog.present(self)
 
+    def zone_by_index(self, index):
+        for zone in self.zones:
+            if zone.index == index:
+                return zone
+        return None
+
     def populate_gpus(self):
         try:
             data = self.felight.list()
@@ -227,3 +233,47 @@ class MainWindow(Adw.ApplicationWindow):
             self.zone_cards[zone.index] = card
             self.zones_box.append(card)
         self.set_status(f"Found {len(self.zones)} illumination zone(s).")
+
+    def refresh_zone_labels(self, zone_index):
+        """Rewrite a card's header and "Active" line from the cache after a successful write."""
+        zone = self.zone_by_index(zone_index)
+        card = self.zone_cards.get(zone_index)
+        if zone is None:
+            return
+        if card is not None:
+            card.refresh_labels(zone)
+
+    def after_zone_write(self, gpu_index, zone_index, was_piecewise):
+        """Update the card once a write succeeded. A zone that was animated (piecewise) is now in
+        manual mode, so its whole card changes shape: re-detect instead of patching it."""
+        if not was_piecewise:
+            self.refresh_zone_labels(zone_index)
+            return
+        status = self.status_label.get_text()
+
+        def redetect():
+            self.populate_zones(gpu_index)
+            self.set_status(status)
+            return GLib.SOURCE_REMOVE
+
+        GLib.idle_add(redetect)
+
+    def on_color_changed(self, picker, _pspec, gpu_index, zone_index):
+        if self.initializing:
+            return
+        zone = self.zone_by_index(zone_index)
+        if zone is None:
+            return
+        r, g, b = bytes_from_rgba(picker.get_rgba())
+        was_piecewise = zone.piecewise is not None
+        try:
+            self.felight.set(gpu_index, zone_index, rgb=(r, g, b))
+        except FelightError as exc:
+            self.alert(f"Failed to set color for zone {zone_index}", exc.message)
+            return
+        zone.r, zone.g, zone.b = r, g, b
+        zone.ctrl_mode = "manual"
+        self.set_status(
+            f"Set {'RGBW' if zone.has_white else 'RGB'} color ({r}, {g}, {b}) on zone {zone_index}"
+        )
+        self.after_zone_write(gpu_index, zone_index, was_piecewise)

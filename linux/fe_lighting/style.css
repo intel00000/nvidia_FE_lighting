@@ -1,0 +1,140 @@
+/* Palette copied from the WPF App.xaml so the window looks the same. */
+window.fe-window {
+    background: linear-gradient(135deg, #0F172A 0%, #0B1220 100%);
+    color: #E5E7EB;
+}
+
+window.fe-window label {
+    color: #E5E7EB;
+}
+
+.fe-title {
+    font-size: 20pt;
+    font-weight: bold;
+}
+
+.fe-subtitle {
+    color: #9CA3AF;
+}
+
+.fe-heading {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.fe-secondary {
+    color: #9CA3AF;
+}
+
+.fe-card {
+    background-color: #152238;
+    border: 1px solid #22304A;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.33);
+}
+
+.fe-zone-card {
+    background-color: #152238;
+    border: 1px solid #22304A;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.fe-status {
+    background-color: #111827;
+    border: 1px solid #22304A;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.fe-status label {
+    color: #9CA3AF;
+}
+
+.fe-dot {
+    background-color: #1F2937;
+    border-radius: 5px;
+    min-width: 10px;
+    min-height: 10px;
+}
+
+window.fe-window button {
+    background: #22304A;
+    color: #E5E7EB;
+    border: 1px solid #22304A;
+    border-radius: 4px;
+    padding: 6px 10px;
+    box-shadow: none;
+    text-shadow: none;
+}
+
+window.fe-window button:hover {
+    background: #2D3F5A;
+    border-color: #2D3F5A;
+}
+
+window.fe-window button:active {
+    background: #1F2937;
+    border-color: #1F2937;
+}
+
+window.fe-window button:disabled {
+    color: #9CA3AF;
+    opacity: 0.6;
+}
+
+window.fe-window dropdown>button {
+    background: #152238;
+    border: 1px solid #22304A;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+
+window.fe-window dropdown>button:hover {
+    background: #2D3F5A;
+    border-color: #2D3F5A;
+}
+
+window.fe-window popover.menu contents {
+    background-color: #152238;
+    border: 1px solid #22304A;
+}
+
+window.fe-window scale trough {
+    background-color: #1C2740;
+    min-height: 4px;
+    border-radius: 2px;
+}
+
+window.fe-window scale highlight {
+    background-color: #1C2740;
+    border-radius: 2px;
+}
+
+window.fe-window scale slider {
+    background-color: #E5E7EB;
+    border: 2px solid #2D3F5A;
+    border-radius: 9px;
+    min-width: 14px;
+    min-height: 14px;
+    margin: -6px;
+    box-shadow: none;
+}
+
+window.fe-window scale slider:hover,
+window.fe-window scale slider:active {
+    background-color: #2D3F5A;
+}
+
+window.fe-window checkbutton check {
+    background-color: #152238;
+    border: 1px solid #2D3F5A;
+    color: #E5E7EB;
+}
+
+window.fe-window headerbar {
+    background: #0D1117;
+    color: #E5E7EB;
+    box-shadow: none;
+}

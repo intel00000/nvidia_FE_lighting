@@ -117,3 +117,101 @@ Exit codes:
 - `6`: profile partially applied
 - `7`: file error
 - `8`: boot service setup failed
+
+## GUI
+
+```bash
+python3 linux/fe_lighting_gui.py
+```
+
+The GUI uses `$FELIGHT_BIN` if it is set, otherwise `felight` next to itself, otherwise the first `felight` in `PATH`.
+It stores profiles in `~/.config/nvidia-fe-lighting/profiles/profile_N.conf`.
+
+Color changes are written immediately; sliders are written when you release them (keyboard and scroll-wheel changes once the value settles).
+"Apply All" re-sends every zone and reports the ones that fail.
+
+## Apply settings at boot
+
+`felight service enable --gpu N` saves GPU N's current state and sets up a systemd service that applies it at every boot and after every resume from suspend or hibernation, with or without a desktop session.
+
+```bash
+felight service enable --gpu 0      # asks to re-run itself with sudo
+journalctl -u nvidia-fe-lighting    # what the service did
+felight service disable
+```
+
+`enable` writes:
+
+- `/etc/nvidia-fe-lighting/startup.conf`: the saved settings
+- `/usr/local/lib/nvidia-fe-lighting/felight`: a copy of `felight`, so the build or archive can move
+- `/etc/systemd/system/nvidia-fe-lighting.service`: a oneshot unit ordered after `nvidia-persistenced` and `nvidia-resume`
+
+If you decline `sudo` or there is no terminal, it prints the commands to run yourself; `--print` prints them without changing anything.
+`--delay S` waits S seconds before applying. `disable` removes all three files.
+
+## Apply settings at login
+
+In the GUI, tick **Apply current settings on startup**. This needs no root:
+
+- the current state goes to `~/.config/nvidia-fe-lighting/startup.conf`, applied 10 s after login
+- `felight` and `fe-lighting-startup.sh` are copied to `~/.local/share/nvidia-fe-lighting/bin/`
+- an autostart entry is written to `~/.config/autostart/nvidia-fe-lighting.desktop`
+
+At login, `felight startup` waits the delay, finds the card by its saved UUID and applies every saved zone; its output goes to `journalctl --user`.
+Unticking the box removes the autostart entry; the settings file and the copies stay.
+If the entry's program goes missing, the box shows unticked with a status message; tick it again to repair it.
+
+## Developer notes
+
+- `fe_lighting_gui.py --selftest` drives the window like a user (detect zones, move a slider by one percent and restore it, save and load profile 1, toggle startup) and exits non-zero on the first failure. It writes to the card and to your configuration; set `FE_LIGHTING_CONFIG_DIR`, `FE_LIGHTING_AUTOSTART_DIR` and `FE_LIGHTING_DATA_DIR` to keep it away from your real files. `--screenshot PATH` renders the window to a PNG.
+- `src/include/nvapi_linux_compat.h` predefines the SAL annotation macros the SDK headers use; without it `nvapi.h` does not compile with GCC or Clang.
+- `felight get --gpu N --default` reads the card's stored default values, which are separate from the active ones; `set --default` writes them and has not been tested here.
+
+### Source layout
+
+`felight` is built from the C files in `src/`, with the headers in `src/include/`. Headers marked *data* hold types, constants and prototypes; the logic is in the `.c` files.
+
+| File | Kind | Contents |
+| --- | --- | --- |
+| `felight.h` | data | Version, directory and file names, exit codes; included by every file. |
+| `nvapi_linux_compat.h` | header | SAL annotation macros the NvAPI headers need. |
+| `diag.h/.c` | logic | `log_err()`, `log_info()` (colored on a terminal; `DEBUG` builds add the caller). |
+| `nvapi_loader.h` | data | `nvapi_t` table of resolved NvAPI functions, `g_nv`. |
+| `nvapi_loader.c` | logic | Loads `libnvidia-api.so.1`, resolves functions by interface ID, reads the driver version. |
+| `model.h` | data | `gpu_t`, `zone_t`. |
+| `model.c` | logic | Zone type, location and mode names; color/white checks; `zone_read_control`. |
+| `device.h` | data | `set_opts_t`. |
+| `device.c` | logic | Reads GPUs (with their UUID) and zones, writes one zone (`set_zone`). |
+| `parse.h/.c` | logic | Number, option and RGB parsing. |
+| `output.h/.c` | logic | Text and JSON output. |
+| `profile.h` | data | `profile_t`, `profile_zone_t`. |
+| `profile.c` | logic | `profile_save`, `profile_load`. |
+| `apply.h/.c` | logic | `apply_profile`, including the GPU identity checks. |
+| `service.h` | data | Unit, settings and binary paths of the boot service. |
+| `service.c` | logic | Installs and removes the boot service; prints the manual steps. |
+| `commands.h` | decl | Prototypes of the `cmd_*` functions. |
+| `cmd_query.c` | logic | `list`, `get`. |
+| `cmd_set.c` | logic | `set`. |
+| `cmd_profile.c` | logic | `save`, `apply`. |
+| `cmd_startup.c` | logic | `startup`. |
+| `cmd_service.c` | logic | `service enable`, `service disable`; offers to re-run itself with `sudo`. |
+| `cmd_version.c` | logic | `version`. |
+| `main.c` | logic | Command table, `usage`, `main`. |
+
+`fe_lighting_gui.py` only starts the GUI; the code is in the `fe_lighting/` package. `model.py` holds the data classes, the other modules the logic and UI.
+
+| File | Kind | Contents |
+| --- | --- | --- |
+| `model.py` | data | Dataclasses for `felight`'s JSON: `GpuList`, `Gpu`, `Zone`, `Piecewise`, `Endpoint`. |
+| `config.py` | data | App ID and name, profile slots, timings, file and directory paths. |
+| `style.css` | data | The GUI's CSS. |
+| `__init__.py` | package | Selects GTK 4, GDK 4 and libadwaita 1 for every module. |
+| `felight_cli.py` | logic | Finds `felight` and runs it (`Felight`, `FelightError`). |
+| `autostart.py` | logic | Stable copies of `felight` and the launcher; writes, removes and checks the autostart entry (`EntryState`). |
+| `style.py` | logic | Loads `style.css`. |
+| `widgets.py` | logic | Color conversion, label, card and slider helpers. |
+| `sliders.py` | logic | `SliderWriter`: writes a slider when it is released or its value settles. |
+| `zone_card.py` | UI | `ZoneCard`, the widgets of one zone. |
+| `window.py` | UI | `MainWindow`. |
+| `app.py` | logic | `App` and `main()` (command-line options). |
+| `selftest.py` | dev aid | `--selftest` and `--screenshot`. |

@@ -4,6 +4,7 @@ from gi.repository import Adw, GLib, Gtk
 
 from .config import APP_NAME
 from .felight_cli import FelightError
+from .sliders import SliderWriter
 from .widgets import bytes_from_rgba, make_card, make_label
 from .zone_card import ZoneCard
 
@@ -21,6 +22,7 @@ class MainWindow(Adw.ApplicationWindow):
         self.current_gpu = 0
         self.zones = []  # cache of the last `felight get --json`
         self.zone_cards = {}  # zone index -> ZoneCard
+        self.sliders = SliderWriter(self.apply_slider)
         self.initializing = True
 
         root = self._build_header()
@@ -205,6 +207,7 @@ class MainWindow(Adw.ApplicationWindow):
             child = nxt
         self.zones = []
         self.zone_cards = {}
+        self.sliders.clear()
 
     def on_detect_clicked(self, _button):
         if not self.gpus:
@@ -277,3 +280,30 @@ class MainWindow(Adw.ApplicationWindow):
             f"Set {'RGBW' if zone.has_white else 'RGB'} color ({r}, {g}, {b}) on zone {zone_index}"
         )
         self.after_zone_write(gpu_index, zone_index, was_piecewise)
+
+    def on_slider_changed(self, scale, gpu_index, zone_index, field):
+        if self.initializing:
+            return
+        self.sliders.changed(scale, gpu_index, zone_index, field)
+
+    def apply_slider(self, scale, gpu_index, zone_index, field):
+        zone = self.zone_by_index(zone_index)
+        if zone is None:
+            return GLib.SOURCE_REMOVE
+        value = round(scale.get_value())
+        was_piecewise = zone.piecewise is not None
+        try:
+            if field == "white":
+                self.felight.set(gpu_index, zone_index, white=value)
+                zone.w = value
+                self.set_status(f"Set white level {value} on zone {zone_index}")
+            else:
+                self.felight.set(gpu_index, zone_index, brightness=value)
+                zone.brightness = value
+                self.set_status(f"Set brightness {value}% on zone {zone_index}")
+            zone.ctrl_mode = "manual"
+        except FelightError as exc:
+            self.alert(f"Failed to set {field} for zone {zone_index}", exc.message)
+            return GLib.SOURCE_REMOVE
+        self.after_zone_write(gpu_index, zone_index, was_piecewise)
+        return GLib.SOURCE_REMOVE

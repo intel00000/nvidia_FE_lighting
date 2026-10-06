@@ -87,6 +87,10 @@ class ZoneCard(Gtk.Box):
                     make_label("  White: ", valign=Gtk.Align.CENTER, margin_start=10)
                 )
                 white = make_slider(0, 255, zone.w)
+                white.connect(
+                    "value-changed", window.on_slider_changed, gpu_index, idx, "white"
+                )
+                window.sliders.track(white, (idx, "white"))
                 row.append(white)
                 self.white = white
             self.append(row)
@@ -94,6 +98,10 @@ class ZoneCard(Gtk.Box):
         row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
         row.append(make_label("Brightness: ", valign=Gtk.Align.CENTER))
         brightness = make_slider(0, 100, zone.brightness)
+        brightness.connect(
+            "value-changed", window.on_slider_changed, gpu_index, idx, "brightness"
+        )
+        window.sliders.track(brightness, (idx, "brightness"))
         row.append(brightness)
         self.brightness = brightness
         self.append(row)

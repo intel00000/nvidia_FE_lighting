@@ -1,10 +1,25 @@
-"""The main window: GPU selection and information, profiles, zone cards, status bar."""
+"""The main window: GPU selection and information, profiles, startup toggle, zone cards, status bar."""
 
 import os
 
 from gi.repository import Adw, GLib, Gtk
 
-from .config import APP_NAME, PROFILE_SLOTS, PROFILES_DIR, profile_path
+from .autostart import (
+    EntryState,
+    entry_state,
+    install_stable_copy,
+    remove_entry,
+    write_entry,
+)
+from .config import (
+    APP_NAME,
+    CONFIG_DIR,
+    PROFILE_SLOTS,
+    PROFILES_DIR,
+    STARTUP_CONF,
+    STARTUP_DELAY_SECONDS,
+    profile_path,
+)
 from .felight_cli import FelightError
 from .sliders import SliderWriter
 from .widgets import bytes_from_rgba, make_card, make_label
@@ -34,6 +49,7 @@ class MainWindow(Adw.ApplicationWindow):
         self._build_status_bar(root)
 
         self.populate_gpus()
+        self.startup_check.set_active(self.autostart_entry_is_valid())
         self.initializing = False
 
     def _build_header(self):
@@ -134,6 +150,13 @@ class MainWindow(Adw.ApplicationWindow):
             column.append(buttons)
             grid.append(column)
         profiles_card.append(grid)
+        self.startup_check = Gtk.CheckButton(
+            label="Apply current settings on startup",
+            halign=Gtk.Align.END,
+            margin_top=6,
+        )
+        self.startup_check.connect("toggled", self.on_startup_toggled)
+        profiles_card.append(self.startup_check)
         root.append(profiles_card)
 
     def _build_zones_section(self, root):
@@ -159,6 +182,18 @@ class MainWindow(Adw.ApplicationWindow):
         dot.add_css_class("fe-dot")
         status.append(dot)
         root.append(status)
+
+    def autostart_entry_is_valid(self):
+        """True if the autostart entry exists and still points at an executable."""
+        state = entry_state()
+        if state is EntryState.ABSENT:
+            return False
+        if state is EntryState.VALID:
+            return True
+        self.set_status(
+            "Startup entry is broken (missing program or settings); tick the box again to repair it."
+        )
+        return False
 
     def set_status(self, message):
         self.status_label.set_text(message)
@@ -410,3 +445,52 @@ class MainWindow(Adw.ApplicationWindow):
         else:
             self.set_status(f"Loaded profile {slot}")
             self.toast(f"Profile {slot} loaded successfully!")
+
+    def on_startup_toggled(self, check):
+        if self.initializing:
+            return
+        if check.get_active():
+            if not self.enable_startup():
+                self.initializing = True
+                check.set_active(False)
+                self.initializing = False
+        else:
+            self.disable_startup()
+
+    def enable_startup(self):
+        if not self.zones:
+            self.alert("No zones detected", "Please detect zones first.")
+            return False
+        try:
+            os.makedirs(CONFIG_DIR, exist_ok=True)
+            self.felight.save(
+                self.current_gpu, STARTUP_CONF, delay=STARTUP_DELAY_SECONDS
+            )
+        except (OSError, FelightError) as exc:
+            self.alert(
+                "Failed to save startup settings", getattr(exc, "message", str(exc))
+            )
+            return False
+        try:
+            command = install_stable_copy(self.felight.binary, self.script_dir)
+        except OSError as exc:
+            self.alert("Failed to install the startup program", str(exc))
+            return False
+        try:
+            write_entry(command)
+        except OSError as exc:
+            self.alert("Failed to enable startup", str(exc))
+            return False
+        self.set_status("Startup enabled")
+        self.toast(
+            f"Settings saved; they will be applied {STARTUP_DELAY_SECONDS} s after login."
+        )
+        return True
+
+    def disable_startup(self):
+        try:
+            remove_entry()
+        except OSError as exc:
+            self.alert("Failed to disable startup", str(exc))
+            return
+        self.set_status("Startup disabled")

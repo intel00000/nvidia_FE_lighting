@@ -7,22 +7,22 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-windows:
     runs-on: windows-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: "recursive"
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: "8.0.x"
 
       - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
+        uses: microsoft/setup-msbuild@v3
 
       - name: Restore NuGet packages
         run: nuget restore nvidia_FE_lighting.sln
@@ -75,10 +75,32 @@ jobs:
         run: Compress-Archive -Path "release-package\*" -DestinationPath "FELighting-${{ github.ref_name }}.zip"
         shell: pwsh
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
+      - name: Upload Windows package
+        uses: actions/upload-artifact@v7
         with:
-          files: FELighting-${{ github.ref_name }}.zip
+          name: windows-package
+          path: FELighting-${{ github.ref_name }}.zip
+          if-no-files-found: error
+
+  release:
+    needs: build-windows
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download packages
+        uses: actions/download-artifact@v8
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: |
+            dist/FELighting-${{ github.ref_name }}.zip
           body: |
             ## NVIDIA FE Lighting Control - ${{ github.ref_name }}
 

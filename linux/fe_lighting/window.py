@@ -115,6 +115,11 @@ class MainWindow(Adw.ApplicationWindow):
             orientation=Gtk.Orientation.VERTICAL, spacing=12, margin_top=6
         )
         zones_card.append(self.zones_box)
+        self.apply_all_button = Gtk.Button(
+            label="Apply All", halign=Gtk.Align.END, margin_top=6, sensitive=False
+        )
+        self.apply_all_button.connect("clicked", self.on_apply_all)
+        zones_card.append(self.apply_all_button)
         root.append(zones_card)
 
     def _build_status_bar(self, root):
@@ -208,6 +213,7 @@ class MainWindow(Adw.ApplicationWindow):
         self.zones = []
         self.zone_cards = {}
         self.sliders.clear()
+        self.apply_all_button.set_sensitive(False)
 
     def on_detect_clicked(self, _button):
         if not self.gpus:
@@ -235,6 +241,7 @@ class MainWindow(Adw.ApplicationWindow):
             card = ZoneCard(zone, gpu_index, self)
             self.zone_cards[zone.index] = card
             self.zones_box.append(card)
+        self.apply_all_button.set_sensitive(True)
         self.set_status(f"Found {len(self.zones)} illumination zone(s).")
 
     def refresh_zone_labels(self, zone_index):
@@ -307,3 +314,37 @@ class MainWindow(Adw.ApplicationWindow):
             return GLib.SOURCE_REMOVE
         self.after_zone_write(gpu_index, zone_index, was_piecewise)
         return GLib.SOURCE_REMOVE
+
+    def on_apply_all(self, _button):
+        """Re-send every cached zone value; report zones that fail instead of claiming success."""
+        if not self.zones:
+            return
+        failures = []
+        written = []
+        any_piecewise = False
+        for zone in self.zones:
+            if not zone.controllable:
+                continue
+            kwargs = {"brightness": zone.brightness}
+            if zone.has_color:
+                kwargs["rgb"] = (zone.r, zone.g, zone.b)
+            if zone.has_white:
+                kwargs["white"] = zone.w
+            try:
+                self.felight.set(self.current_gpu, zone.index, **kwargs)
+            except FelightError as exc:
+                failures.append(f"zone {zone.index}: {exc.message}")
+                continue
+            any_piecewise = any_piecewise or zone.piecewise is not None
+            zone.ctrl_mode = "manual"
+            written.append(zone.index)
+        if failures:
+            self.set_status(f"Apply All: {len(failures)} zone(s) failed.")
+            self.alert("Apply All finished with errors", "\n".join(failures))
+        else:
+            self.set_status("Applied settings to all zones.")
+        if any_piecewise:
+            self.after_zone_write(self.current_gpu, None, True)
+        else:
+            for index in written:
+                self.refresh_zone_labels(index)

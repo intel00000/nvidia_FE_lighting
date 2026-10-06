@@ -3,24 +3,60 @@
 
 #include <stdio.h>
 
+// returns the length of the UTF-8 sequence at s and stores its code point, or 0 if it is not valid UTF-8
+static int utf8_decode(const unsigned char *s, unsigned *cp)
+{
+    int n;
+    if (s[0] >= 0xF0 && s[0] <= 0xF4)
+        n = 4;
+    else if (s[0] >= 0xE0 && s[0] < 0xF0)
+        n = 3;
+    else if (s[0] >= 0xC2 && s[0] < 0xE0)
+        n = 2;
+    else
+        return 0;
+    unsigned c = s[0] & (0x7F >> n);
+    for (int i = 1; i < n; i++)
+    {
+        if ((s[i] & 0xC0) != 0x80)
+            return 0;
+        c = (c << 6) | (s[i] & 0x3F);
+    }
+    if ((n == 3 && c < 0x800) || (n == 4 && (c < 0x10000 || c > 0x10FFFF)) || (c >= 0xD800 && c <= 0xDFFF))
+        return 0;
+    *cp = c;
+    return n;
+}
+
 void json_string(FILE *f, const char *s)
 {
     fputc('"', f);
     for (; *s; s++)
     {
         unsigned char ch = (unsigned char)*s;
+        unsigned cp;
+        int n;
         // escape double quotes and backslashes
         if (ch == '"' || ch == '\\')
         {
             fputc('\\', f);
             fputc(ch, f);
         }
-        // control characters (0x00-0x1F)
-        else if (ch < 0x20 || ch > 0x7E)
-            fprintf(f, "\\u%04x", ch);
         // printable ASCII characters (0x20-0x7E)
-        else
+        else if (ch >= 0x20 && ch < 0x7F)
             fputc(ch, f);
+        // UTF-8 sequences, above U+FFFF as a surrogate pair
+        else if (ch >= 0x80 && (n = utf8_decode((const unsigned char *)s, &cp)) > 0)
+        {
+            if (cp > 0xFFFF)
+                fprintf(f, "\\u%04x\\u%04x", 0xD800 + ((cp - 0x10000) >> 10), 0xDC00 + ((cp - 0x10000) & 0x3FF));
+            else
+                fprintf(f, "\\u%04x", cp);
+            s += n - 1;
+        }
+        // control characters, DEL and bytes that are not valid UTF-8
+        else
+            fprintf(f, "\\u%04x", ch);
     }
     fputc('"', f);
 }

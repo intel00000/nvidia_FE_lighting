@@ -104,7 +104,5 @@ int main(int argc, char **argv)
         rc = EXIT_USAGE;
     }
     nv_close(&g_nv);
-    if (g_log)
-        fclose(g_log);
     return rc;
 }

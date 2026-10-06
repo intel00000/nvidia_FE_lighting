@@ -12,8 +12,6 @@
 #define ANSI_COLOR_GREEN "\x1b[32m"
 #define ANSI_COLOR_RESET "\x1b[0m"
 
-FILE *g_log;
-
 static struct timespec g_last_ts = {0, 0};
 static int g_have_last = 0;
 
@@ -39,29 +37,22 @@ static void make_prefix(char *buf, size_t bufsz, const char *func)
     snprintf(buf, bufsz, "[%s.%03d +%.6fs][%s]", tsbuf, (int)(now.tv_nsec / 1000000L), delta, func);
 }
 
-// writes the message to out, colored when out is a terminal, and mirrors it to g_log
+// writes the message to out, colored when out is a terminal
 __attribute__((format(printf, 5, 0))) static void vlog(FILE *out, const char *color, int stamped, const char *func, const char *format, va_list v)
 {
-    char prefix[128];
-    make_prefix(prefix, sizeof(prefix), func);
-    va_list copy;
-    va_copy(copy, v);
     int tty = isatty(fileno(out));
     if (tty)
         fputs(color, out);
     if (stamped)
+    {
+        char prefix[128];
+        make_prefix(prefix, sizeof(prefix), func);
         fprintf(out, "%s ", prefix);
+    }
     vfprintf(out, format, v);
     if (tty)
         fputs(ANSI_COLOR_RESET, out);
     fflush(out);
-    if (g_log)
-    {
-        fprintf(g_log, "%s ", prefix);
-        vfprintf(g_log, format, copy);
-        fflush(g_log);
-    }
-    va_end(copy);
 }
 
 void log_err(const char *format, ...)

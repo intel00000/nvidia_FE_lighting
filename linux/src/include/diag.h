@@ -1,9 +1,5 @@
 // diag.h
 #pragma once
-#include <stdio.h>
-
-// startup log, once it is open every message is written to it with a timestamp
-extern FILE *g_log;
 
 // log_err(format, ...)
 // Writes an error or warning to stderr, red on a terminal. The caller ends the message with \n.

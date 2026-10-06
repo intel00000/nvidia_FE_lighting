@@ -41,7 +41,7 @@ int apply_profile(const profile_t *p, long gpu_override, int verify_gpu, void (*
         }
         if (reported && by_uuid < 0)
         {
-            say("GPU mismatch: no GPU has the saved UUID %s; nothing applied. Re-enable startup in the GUI to save the current GPU.\n", p->gpu_uuid);
+            say("GPU mismatch: no GPU has the saved UUID %s; nothing applied. Save the settings again on the current GPU.\n", p->gpu_uuid);
             return EXIT_GPU_MISMATCH;
         }
     }
@@ -76,7 +76,7 @@ int apply_profile(const profile_t *p, long gpu_override, int verify_gpu, void (*
         }
         if (matches == 0)
         {
-            say("GPU mismatch: no GPU has the saved identity (bus %u, device 0x%08x, subsystem 0x%08x); nothing applied. Re-enable startup in the GUI to save the current GPU.\n",
+            say("GPU mismatch: no GPU has the saved identity (bus %u, device 0x%08x, subsystem 0x%08x); nothing applied. Save the settings again on the current GPU.\n",
                 p->bus_id, p->device_id, p->subsystem_id);
             return EXIT_GPU_MISMATCH;
         }

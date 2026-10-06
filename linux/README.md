@@ -1,12 +1,12 @@
 # NVIDIA FE Lighting for Linux
 
-Linux port of the Windows tool in this repository. It controls the illumination zones of NVIDIA Founders Edition cards and apply your saved settings automatically at startup or after login.
+Linux port of the Windows tool in this repository. It controls the illumination zones of NVIDIA Founders Edition cards and applies your saved settings automatically at startup or after login.
 
 It consists of three components:
 
 | File | What it is |
 | --- | --- |
-| `felight` (built from `src/*.c`) | Command-line tool that does the access. It can also set up a systemd service that applies saved settings at boot. |
+| `felight` (built from `src/*.c`) | Command-line tool that does all hardware access. It can also set up a systemd service that applies saved settings at boot. |
 | `fe_lighting_gui.py` + `fe_lighting/` | GTK4 / libadwaita GUI that mirrors the Windows version and drives `felight`. `fe_lighting_gui.py` is the launcher. |
 | `fe-lighting-startup.sh` | Launcher the GUI's login autostart entry runs; it execs `felight startup`. |
 

@@ -18,11 +18,13 @@
  *   save --gpu N [--delay S] FILE                   write the current zone state as a profile
  *   apply [--gpu N] [--no-verify-gpu] FILE          apply a profile now
  *   startup [--no-delay] FILE                       delayed apply of FILE, as the boot service runs it
+ *   service enable --gpu N [--delay S] [--print]    set up the systemd boot service (needs root)
+ *   service disable [--print]                       remove it
  *   version
  *
  * Exit codes: 0 ok, 1 usage, 2 library/driver unavailable, 3 NvAPI error,
  *             4 GPU/zone mismatch (nothing applied), 5 write verification failed,
- *             6 profile partially applied, 7 file error.
+ *             6 profile partially applied, 7 file error, 8 boot service setup failed.
  */
 #include "commands.h"
 #include "diag.h"
@@ -48,6 +50,9 @@ static const command_t commands[] = {
     {"save", cmd_save, "  save --gpu N [--delay S] FILE                   write the current state as a profile file\n"},
     {"apply", cmd_apply, "  apply [--gpu N] [--no-verify-gpu] FILE          apply a profile file now\n"},
     {"startup", cmd_startup, "  startup [--no-delay] FILE                       delayed apply of FILE, as the boot service runs it\n"},
+    {"service", cmd_service,
+     "  service enable --gpu N [--delay S] [--print]    apply GPU N's settings at boot and resume\n"
+     "  service disable [--print]                       remove that boot service (both need root)\n"},
     {"version", cmd_version, "  version\n"},
 };
 
@@ -63,7 +68,7 @@ static void usage(FILE *f)
     fputs("\n"
           "exit codes: 0 ok, 1 usage, 2 library/driver missing, 3 NvAPI error,\n"
           "            4 GPU/zone mismatch (nothing applied), 5 write verification failed,\n"
-          "            6 profile partially applied, 7 file error\n",
+          "            6 profile partially applied, 7 file error, 8 boot service setup failed\n",
           f);
 }
 

@@ -3,12 +3,12 @@
 #define FELIGHT_H
 
 #include "nvapi_linux_compat.h"
+
 #include "nvapi.h"
 
 #define FELIGHT_VERSION "0.1.0"
 #define APP_DIR_NAME "nvidia-fe-lighting"
 #define STARTUP_FILE_NAME "startup.conf"
-#define STARTUP_LOG_NAME "startup.log"
 #define MAX_DELAY_SECONDS 86400
 
 enum
@@ -20,6 +20,7 @@ enum
     EXIT_VERIFY = 5,
     EXIT_PARTIAL = 6,
     EXIT_FILE = 7,
+    EXIT_SERVICE = 8,
 };
 
 #endif

@@ -12,8 +12,8 @@ Controlling RGB/RGBW illumination zones on NVIDIA graphics cards, primarily for 
 
 ## Requirements
 
-- Windows 10/11 (64-bit)
-- .NET 8.0.x Runtime ([Download here](https://dotnet.microsoft.com/download/dotnet/8.0))
+- Windows 10/11 (64-bit), or Linux (see [Linux](#linux) below)
+- .NET 8.0.x Runtime ([Download here](https://dotnet.microsoft.com/download/dotnet/8.0)) (Windows only)
 - NVIDIA drivers installed
 
 ## Installation
@@ -69,6 +69,10 @@ The startup feature ensures your lighting settings persist across reboots:
 
 The application will copy itself to `%AppData%\NvidiaFELighting\FELighting.exe` for reliable startup execution.
 
+## Linux
+
+A native Linux port lives in [`linux/`](linux/): the `felight` command-line tool (C, talks to the driver's `libnvidia-api.so.1`), a GTK4/libadwaita GUI that mirrors this window, and a login autostart launcher. `felight service enable` sets up a systemd service that applies your settings at boot, also on machines without a desktop. Build it with `make -C linux`; see [linux/README.md](linux/README.md) for details, requirements and how to apply your settings at boot or login. Release archives for Linux are built by the same GitHub Actions workflow as the Windows exe.
+
 ## Project Structure
 
 ```
@@ -77,9 +81,16 @@ nvidia_FE_lighting/
 │   ├── App.xaml/App.xaml.cs    # Application entry point and startup logic
 │   ├── MainWindow.xaml/.cs     # Main UI and control logic
 │   └── NvApiWrapper.cs         # P/Invoke declarations
-├── NvApiWrapper/               # C++ wrapper for NVIDIA API
-    ├── NvApiDll.cpp            # NVAPI implementation
-    └── NvApiDll.h              # Header file
+├── NvApiWrapper/               # C++ wrapper for NVIDIA API (Windows)
+│   ├── NvApiDll.cpp            # NVAPI implementation
+│   ├── NvApiDll.h              # Header file
+│   └── nvapi/                  # NVIDIA NvAPI SDK (git submodule)
+└── linux/                      # Linux port
+    ├── src/                    # felight command-line tool (C) over libnvidia-api.so.1
+    │   └── include/            # Headers, incl. nvapi_linux_compat.h (NvAPI headers with GCC/Clang)
+    ├── fe_lighting/            # GTK4 / libadwaita GUI (Python package)
+    ├── fe_lighting_gui.py      # GUI launcher
+    └── fe-lighting-startup.sh  # Login autostart launcher
 ```
 
 ## Acknowledgments

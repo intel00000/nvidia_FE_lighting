@@ -1,9 +1,10 @@
-"""The main window: status bar."""
+"""The main window: GPU selection and information, status bar."""
 
 from gi.repository import Adw, Gtk
 
 from .config import APP_NAME
-from .widgets import make_label
+from .felight_cli import FelightError
+from .widgets import make_card, make_label
 
 
 class MainWindow(Adw.ApplicationWindow):
@@ -15,8 +16,16 @@ class MainWindow(Adw.ApplicationWindow):
         self.set_default_size(1920, 1080)
         self.set_size_request(960, 540)
 
+        self.gpus = []  # from `felight list --json`
+        self.current_gpu = 0
+        self.initializing = True
+
         root = self._build_header()
+        self._build_gpu_section(root)
         self._build_status_bar(root)
+
+        self.populate_gpus()
+        self.initializing = False
 
     def _build_header(self):
         toolbar = Adw.ToolbarView()
@@ -51,6 +60,45 @@ class MainWindow(Adw.ApplicationWindow):
         root.append(subtitle)
         return root
 
+    def _build_gpu_section(self, root):
+        top = Gtk.Box(
+            orientation=Gtk.Orientation.HORIZONTAL, spacing=12, homogeneous=True
+        )
+        root.append(top)
+
+        select_card = make_card()
+        select_card.append(make_label("Select GPU", "fe-heading", margin_bottom=4))
+        select_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        self.gpu_dropdown = Gtk.DropDown.new_from_strings([])
+        self.gpu_dropdown.set_size_request(250, -1)
+        self.gpu_dropdown.set_valign(Gtk.Align.CENTER)
+        self.gpu_dropdown.connect("notify::selected", self.on_gpu_selected)
+        select_row.append(self.gpu_dropdown)
+        select_card.append(select_row)
+        top.append(select_card)
+
+        info_card = make_card()
+        info_card.append(make_label("GPU Information", "fe-heading", margin_bottom=4))
+        self.info_name = make_label("Name: ")
+        self.info_name.add_css_class("fe-heading")
+        self.info_details = make_label("Details: ", "fe-secondary")
+        self.info_pci = make_label("PCI: ", "fe-secondary")
+        self.info_uuid = make_label("UUID: ", "fe-secondary")
+        self.info_driver = make_label("Driver Version: ", "fe-secondary")
+        self.info_library = make_label("NvAPI Library: ", "fe-secondary")
+        for widget in (
+            self.info_name,
+            self.info_details,
+            self.info_pci,
+            self.info_uuid,
+            self.info_driver,
+            self.info_library,
+        ):
+            widget.set_wrap(True)
+            widget.set_selectable(True)
+            info_card.append(widget)
+        top.append(info_card)
+
     def _build_status_bar(self, root):
         status = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
         status.add_css_class("fe-status")
@@ -72,3 +120,56 @@ class MainWindow(Adw.ApplicationWindow):
         dialog.add_response("ok", "OK")
         dialog.set_default_response("ok")
         dialog.present(self)
+
+    def populate_gpus(self):
+        try:
+            data = self.felight.list()
+        except FelightError as exc:
+            self.set_status("NvAPI initialization failed.")
+            self.alert("Failed to initialize NvAPI", exc.message)
+            self.gpus = []
+            self.driver = ""
+            self.library = ""
+            return
+        self.gpus = data.gpus
+        self.driver = data.driver or "unknown"
+        self.library = data.library or "libnvidia-api.so.1"
+        names = [f"{g.index}: {g.name}" for g in self.gpus]
+        self.gpu_dropdown.set_model(Gtk.StringList.new(names))
+        if self.gpus:
+            self.gpu_dropdown.set_selected(0)
+            self.refresh_gpu_info(0)
+            self.set_status(f"Detected {len(self.gpus)} GPU(s).")
+        else:
+            self.set_status("No GPUs detected.")
+
+    def refresh_gpu_info(self, index):
+        self.current_gpu = index
+        gpu = self.gpus[index]
+        self.info_name.set_text("Name: " + gpu.name)
+        if gpu.rt_cores is not None:
+            external = "Yes" if gpu.external else "No"
+            self.info_details.set_text(
+                f"Details: Ray Tracing Cores: {gpu.rt_cores}, Tensor Cores: {gpu.tensor_cores}, isExternal GPU: {external}"
+            )
+        else:
+            self.info_details.set_text("Details: not available")
+        if gpu.bus_id is not None:
+            self.info_pci.set_text(
+                f"PCI: bus {gpu.bus_id}, device {gpu.device_id}, subsystem {gpu.subsystem_id}"
+            )
+        else:
+            self.info_pci.set_text("PCI: not available")
+        self.info_uuid.set_text("UUID: " + (gpu.uuid or "not available"))
+        self.info_driver.set_text("Driver Version: " + self.driver)
+        self.info_library.set_text("NvAPI Library: " + self.library)
+        self.set_status(f"Loaded GPU {index}")
+
+    def on_gpu_selected(self, dropdown, _pspec):
+        if self.initializing or not self.gpus:
+            return
+        index = dropdown.get_selected()
+        if index == Gtk.INVALID_LIST_POSITION:
+            self.set_status("No GPU selected.")
+            return
+        self.refresh_gpu_info(index)

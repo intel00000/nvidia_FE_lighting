@@ -59,6 +59,9 @@ make -C linux install
 Release archives built by GitHub Actions (`FELighting-linux-x86_64-<tag>.tar.gz`) contain the
 same files prebuilt on Ubuntu 22.04, so they need glibc 2.35 or newer.
 
+`make -C linux check` runs the tests in [tests/](tests/README.md) on test copies of `felight` that
+can only load a mock NvAPI library. They need Python 3, but no GPU or NVIDIA driver.
+
 ## Command line
 
 ```text

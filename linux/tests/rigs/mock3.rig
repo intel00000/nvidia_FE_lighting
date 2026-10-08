@@ -1,0 +1,10 @@
+# An RTX 5090 FE, an RTX 4090 with RGB and RGBW zones, and an RTX A2000 without lighting.
+card uuid=GPU-3f6c1a2e-8d4b-4c9a-b1e7-5a0d9c2f4e81 pci=1,0x2b8510de,0x205710de,0xa1,0x2b85 info=170,680,0 name=NVIDIA GeForce RTX 5090
+zone type=single_color loc=gpu_front br=70 dbr=100
+zone type=single_color loc=gpu_top dev=1 br=45 dbr=100
+zone type=single_color loc=gpu_back dev=2 br=100 dbr=100
+card uuid=GPU-a71e9b04-2c5d-4e8f-9a36-0b1d7c4e2f95 pci=2,0x268410de,0x167010de,0xa1,0x2684 info=128,512,0 mask=0x3 name=NVIDIA GeForce RTX 4090
+zone type=rgb rgbw=255,72,0,0 br=85 drgbw=255,255,255,0 dbr=100
+zone type=rgbw loc=gpu_front dev=1 rgbw=9,8,7,6 br=10 drgbw=255,255,255,255 dbr=100
+zone type=rgbw loc=gpu_back dev=1 rgbw=40,120,255,60 br=60 drgbw=255,255,255,255 dbr=100
+card uuid=GPU-5c2e8f71-9b3a-4d6e-8c1f-2a7b9e0d3c46 pci=3,0x257110de,0x161110de,0xa1,0x2571 fail=info name=NVIDIA RTX A2000 12GB

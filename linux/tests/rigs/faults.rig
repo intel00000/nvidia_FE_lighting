@@ -1,0 +1,5 @@
+# An RTX 5090 FE whose zone 1 rejects writes and whose zone 2 ignores them.
+card uuid=GPU-3f6c1a2e-8d4b-4c9a-b1e7-5a0d9c2f4e81 pci=1,0x2b8510de,0x205710de,0xa1,0x2b85 info=170,680,0 name=NVIDIA GeForce RTX 5090
+zone type=single_color loc=gpu_front br=50 dbr=100
+zone type=single_color loc=gpu_top dev=1 br=60 dbr=100 fault=set
+zone type=single_color loc=gpu_back dev=2 br=60 dbr=100 fault=stuck

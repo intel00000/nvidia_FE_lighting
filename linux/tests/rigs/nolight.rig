@@ -1,0 +1,2 @@
+# An RTX A2000, which has no lighting.
+card uuid=GPU-5c2e8f71-9b3a-4d6e-8c1f-2a7b9e0d3c46 pci=3,0x257110de,0x161110de,0xa1,0x2571 fail=info name=NVIDIA RTX A2000 12GB

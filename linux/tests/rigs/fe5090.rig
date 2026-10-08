@@ -1,0 +1,5 @@
+# An RTX 5090 Founders Edition: three single-color zones, manual mode only.
+card uuid=GPU-3f6c1a2e-8d4b-4c9a-b1e7-5a0d9c2f4e81 pci=1,0x2b8510de,0x205710de,0xa1,0x2b85 info=170,680,0 name=NVIDIA GeForce RTX 5090
+zone type=single_color loc=gpu_front br=50 dbr=100
+zone type=single_color loc=gpu_top dev=1 br=60 dbr=100
+zone type=single_color loc=gpu_back dev=2 br=60 dbr=100

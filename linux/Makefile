@@ -9,6 +9,9 @@
 #
 # `make install` puts felight and fe-lighting-startup in BINDIR, the GUI (fe_lighting_gui.py and
 # the fe_lighting package) in DATADIR, and a fe-lighting-gui symlink to it in BINDIR.
+#
+# `make check` builds test copies of felight that can only load the mock NvAPI library in
+# tests/mock, and runs tests/run.py on them. It needs Python 3 but no GPU or NVIDIA driver.
 
 NVAPI_HEADER := $(firstword $(wildcard ../NvApiWrapper/nvapi/nvapi.h ../nvapi/nvapi.h))
 NVAPI_DIR    := $(patsubst %/nvapi.h,%,$(NVAPI_HEADER))
@@ -40,7 +43,16 @@ SRCS := src/main.c \
         src/cmd_service.c
 HDRS := $(wildcard src/include/*.h)
 
-.PHONY: all clean install uninstall check-headers
+# Test builds never log in DEBUG style, because the tests compare felight's output.
+TEST_OUT    := build/tests
+TEST_CFLAGS := -UDEBUG
+TEST_WRAP   := -Wl,--wrap=dlopen -Wl,--wrap=sleep -Wl,--wrap=usleep
+MOCK_SRCS   := $(wildcard tests/mock/*.c)
+MOCK_HDRS   := $(wildcard tests/mock/*.h)
+SHIM_SRCS   := tests/shim/wrap.c
+CHECK_ARGS  ?=
+
+.PHONY: all clean install uninstall check-headers check
 
 all: felight
 
@@ -63,5 +75,16 @@ uninstall:
 	rm -f $(DESTDIR)$(DATADIR)/fe_lighting_gui.py
 	rm -rf $(DESTDIR)$(DATADIR)/fe_lighting
 
+check: $(TEST_OUT)/felight $(TEST_OUT)/libnvidia-api.so.1
+	python3 -B tests/run.py $(TEST_OUT) $(CHECK_ARGS)
+
+$(TEST_OUT)/felight: $(SRCS) $(HDRS) $(SHIM_SRCS) | check-headers
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(TEST_CFLAGS) $(CPPFLAGS) $(TEST_WRAP) -o $@ $(SRCS) $(SHIM_SRCS) $(LDLIBS)
+
+$(TEST_OUT)/libnvidia-api.so.1: $(MOCK_SRCS) $(MOCK_HDRS) | check-headers
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(TEST_CFLAGS) $(CPPFLAGS) -fPIC -shared -Wl,-z,nodelete -o $@ $(MOCK_SRCS)
+
 clean:
-	rm -f felight
+	rm -rf felight build

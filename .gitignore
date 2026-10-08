@@ -364,4 +364,8 @@ FodyWeavers.xsd
 
 # Linux port build output
 linux/felight
+linux/build/
 /nvapi/
+
+# Custom
+.claude
